@@ -1,6 +1,6 @@
 # Project context
 
-This file belongs to the project. Initialization creates it once; template
+This file belongs to the project. Workspace creation writes it once; template
 upgrades preserve it. Keep it concise and edit it as the work develops.
 
 ## Purpose and current direction

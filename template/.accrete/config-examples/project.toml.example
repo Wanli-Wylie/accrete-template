@@ -1,8 +1,9 @@
 # Shared project configuration example. This is not an initialized project.
-# Native `accrete init` allocates project_id; preserve it in every clone.
-# See ../docs/configuration.md and the installed binary's supported schema.
+# `npx accrete-kit@latest create` generates project_id; preserve it in every clone.
+# See ../docs/configuration.md.
 format = 1
-project_id = "GENERATED_BY_ACCRETE_INIT"
+project_id = "GENERATED_AT_WORKSPACE_CREATION"
+name = "project-name"
 timezone = "UTC"
 
 [paths]

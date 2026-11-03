@@ -66,7 +66,8 @@ the context of the task. Use native Git for merging or cherry-picking source
 changes. Preserve a useful unmerged line of work with an appropriate Git ref or
 bundle when needed. Closing an ACCRETE iteration describes its outcome and
 retained revisions; it does not choose an integration strategy or remove the
-worktree.
+worktree. `accrete model iteration remove-worktree` is the separate explicit step
+for an iteration's worktree, and it keeps Git's refusal to remove changed work.
 
 Decide whether the combined work should enter Results or Memory. Independent
 workers can publish their delegated Results or Memory through the Kernel. The
@@ -82,9 +83,10 @@ organized.
 
 Read the CLI's outcome before retrying. If a Result or Memory entry committed
 but the local index is pending, refresh the index and use the returned object ID.
-If a native side effect survived but descriptor publication did not, use the
-operation receipt and surviving paths. Do not repeat a scientific computation
-to repair object organization.
+If a native side effect survived but descriptor publication did not, or durability
+was reported uncertain, run `accrete recover` on the host that performed it. It
+reconciles from the receipts and never relaunches work. Do not repeat a scientific
+computation to repair object organization.
 
 For a revision conflict, read the current document and preserve the incoming
 draft. Combine the intended changes, then submit the appropriate narrow update.

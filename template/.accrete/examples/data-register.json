@@ -3,7 +3,7 @@
   "description": "Describe the selected completed product and its intended use.",
   "content": {
     "kind": "directory",
-    "state": "closed"
+    "mode": "closed"
   },
   "origin": {
     "description": "Describe the producer, extraction, or provider of this material."

@@ -1,0 +1,30 @@
+name: Release
+# A version tag publishes accrete-kit. The Kernel it declares must already be a GitHub
+# Release of accrete-cli, so that release comes first; a missing one stops here.
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  publish:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+      - name: The tag names this package version
+        run: test "${GITHUB_REF_NAME#v}" = "$(node -p "require('./package.json').version")"
+      - run: npm run check
+      - name: Fetch the declared Kernel for all four platforms
+        run: node scripts/fetch-kernel.mjs
+      - run: npm test
+      - name: Check the catalog against the embedded Kernel for this runner
+        run: node scripts/check-cli-contract.mjs --binary dist/kernel/linux-x64/accrete
+      - name: Publish with trusted publishing
+        run: npm publish

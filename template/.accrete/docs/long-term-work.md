@@ -48,9 +48,9 @@ have a project identity.
 
 A Skill is one discovery interface for that capability. Expose it when automatic
 discovery helps. It can also be used directly by path or by another program.
-Keep the Tool's editable source distinct from generated host wrappers. Refresh
-the exposure when its description or binding changes; code edits still happen
-with normal development tools.
+Keep the Tool's editable source distinct from generated host wrappers. Run `tool
+refresh` when its description or binding changes; code edits still happen with
+normal development tools.
 
 Record the implementation used for a particular activity when known. An
 admission-time commit on a live Tool does not automatically identify the code a
@@ -83,8 +83,8 @@ provider versions, and manifests have their own scopes; use what is known and
 worth computing for the task.
 
 Two products with identical bytes can have different scientific roles. Preserve
-both meanings. A corrected closed product normally receives a new identity or
-an explicit content version so old Results continue to refer to the input or
+both meanings. A corrected closed product normally receives a new Data ID, naming
+the earlier one in `replaces`, so old Results continue to refer to the input or
 output they actually used.
 
 Retaining a descriptor does not ensure that a remote path will remain available.
@@ -95,11 +95,12 @@ or an explicitly chosen archive.
 
 ## Separate project progress from software upgrades
 
-The Kernel, foundational guidance, Model, Tool, Data, and Memory evolve on their
-own schedules. A distribution upgrade makes a different executable available.
-A project upgrade updates compatible foundational assets. A migration changes
-managed document representation. Neither action advances a Model, revises an
-earlier interpretation, or declares a scientific result obsolete.
+The Kernel and foundational guidance are versioned releases; Models, Tools, Data, and
+Memory evolve on the project's own schedule. `npx accrete-kit@latest upgrade` brings
+newer foundational assets into this project and moves its Kernel binary.
+`accrete migrate` changes managed document representation.
+None of these advances a Model, revises an earlier interpretation, or declares a
+scientific result obsolete.
 
 Use [the configuration guide](configuration.md) to resolve the active host and
 [the remote guide](remote-work.md) when computation and analysis happen in

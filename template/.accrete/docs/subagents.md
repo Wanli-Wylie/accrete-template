@@ -41,19 +41,20 @@ Model binding and paths in the brief; do not infer they are equivalent.
 
 ## Publish when it is part of the assignment
 
-Use the native CLI to publish managed objects. Draft structured input or Memory
+Use `accrete` to publish managed objects. Draft structured input or Memory
 prose in an ordinary working file, then submit it. You can record useful failed
 or partial activity, retain external references, and admit work retrospectively.
 Missing local payloads do not require fabricating a completed computation.
 
 Keep the command's returned object IDs, revisions, paths, and any pending effects
 in the handover. If only indexing remains, the object has already committed.
-If an amendment conflicts with another writer, retain your draft and reconcile
-the specific changes with the current document or Coordinator.
+If a transfer, worktree or publication stopped partway, run `accrete recover` and
+report what it finished. If an amendment conflicts with another writer, retain your
+draft and reconcile the specific changes with the current document or Coordinator.
 
-Do not edit shared managed descriptors or SQLite directly to bypass a missing
-command. Continue native work and hand over the prepared draft with the specific
-CLI operation it needs.
+Do not edit shared managed descriptors or SQLite directly. On a host without the
+binary, continue native work and hand over the prepared draft with the specific
+command it needs.
 
 ## Return a useful handover
 
@@ -73,5 +74,5 @@ A handover can be a few sentences. For example:
 > beside the table for integration with the comparison worker's findings.
 
 Fill the concrete references from your work. Do not create a task card or
-administrative report merely to fit this example. Before retiring a temporary
+administrative report merely to fit this example. Before removing a temporary
 worktree, return or retain the selected source and products needed later.

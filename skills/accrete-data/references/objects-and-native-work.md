@@ -20,7 +20,7 @@ Keep these descriptions distinct when interpreting a Data descriptor:
 | Origin | How the material arose: provider, extraction, generating Result, or explanation. |
 | Location | A concrete filesystem or backend locator through which bytes may be accessed. |
 | Availability observation | What was known about a location at a particular time. |
-| Digest or manifest | Optional identification of explicitly scoped content. |
+| `content.sha256` or manifest | Optional identification of a file's bytes or of explicitly scoped content. |
 | Descriptor revision | The current metadata bytes used to detect conflicting edits. |
 
 Two Data IDs may intentionally denote different products with identical bytes.
@@ -31,9 +31,10 @@ not identify what a historical activity consumed.
 A closed object describes one intended content edition. Add locations and
 correct metadata without changing that edition. If a numerical fix produces
 different output, register a new object and relate it to the previous one.
-A provider-native immutable version can identify an edition directly. Keep
-opaque backend tokens as supplied; an mtime or ETag is not automatically a
-SHA-256 content digest.
+A provider-native immutable version can identify an edition, described in
+`content.edition`. Keep opaque backend tokens as supplied; an mtime or ETag is not a
+SHA-256 content digest, and a backend version selector is not something generic
+materialization will fetch.
 
 The revision returned after a descriptor amendment serves optimistic editing.
 It is separate from the content identity: adding an archive copy changes the
@@ -109,14 +110,14 @@ jq '.' /path/from/a/data-receipt.json
 ```
 
 Replace the example path with the actual descriptor path. Use `sqlite3
--readonly` on the configured host-local index for relational questions, after
-checking that its projection covers the documents needed. Use native SQL
-schema discovery (`.schema`) instead of assuming a column from a different
-Kernel release. `accrete index refresh` rebuilds a stale projection from small
+-readonly` on the host-local index, at the path in `.local_state.index` from `accrete
+config resolve --json`, for relational questions, after checking that its projection
+covers the documents needed. Use native SQL schema discovery (`.schema`) instead of
+assuming a column. A brief "database is locked" during a concurrent refresh means retry. `accrete index refresh` rebuilds a stale projection from small
 documents; it does not reprocess scientific payloads.
 
 Edit scientific source or working content with ordinary tools. Publish Data
 registration and location changes with the Kernel. If directly editing managed
-metadata is explicitly required, use the supported import/edit path and refresh
-the projection afterward. A direct file edit does not participate in the
-Kernel's local concurrency protection.
+metadata is explicitly required, coordinate with other writers and run `accrete index
+refresh` afterward. A direct file edit does not participate in the Kernel's local
+concurrency protection.

@@ -18,6 +18,7 @@ does not depend on a mandatory registration sequence or run wrapper.
 | Retain a newly described activity | Draft structured input and call `accrete result record`. |
 | Add one observation to a known activity | Call `accrete result observe`. |
 | Correct associations or add structured completion information | Call `accrete result amend` using the current revision. |
+| Keep dirty working source beyond its checkout | Call `accrete result capture` and register the directory as Data if useful. |
 | Execute a new attempt | Run it natively and normally give it a new Result ID if retained. |
 | Reinterpret an earlier result | Write linked Memory; retain a new analysis Result if useful. |
 | Find present process state | Use the scheduler, process tools, logs, or domain launcher. |
@@ -46,13 +47,14 @@ incomplete, or failed activity. A draft in Scratch has not yet been published.
 Publish managed Result changes through the native Kernel. A successful document
 publication with `index_pending` means the Result exists: refresh the SQL
 projection instead of creating it again. For an interrupted acknowledgment,
-reuse an already supplied stable ID or operation ID when supported and inspect
-the reported receipt. Resolve revision conflicts by reading the current document
+reuse the supplied stable ID or operation ID and inspect the reported receipt. For
+uncertain durability, run `accrete recover`. Resolve revision conflicts by reading the current document
 and retaining independent contributions. Never rerun scientific computation to
 repair a Result or its index.
 
 Read existing JSON, Git history, logs, and the host-local SQLite projection
-with native tools. Use the configured project roots and explicit `--project`
+with native tools; `accrete config resolve --json` gives the index path at
+`.local_state.index`, for `sqlite3 -readonly`. Use the configured project roots and explicit `--project`
 selection when outside the ACCRETE root.
 
 ## Read when needed
@@ -60,9 +62,8 @@ selection when outside the ACCRETE root.
 - [Activities and relationships](references/activities-and-relations.md):
   execution identity, unknowns, content, roles, and related activities.
 - [Command manual](references/commands.md): input drafts, writes,
-  amendments, independent observations, and operation receipts.
+  amendments, independent observations, source capture, and operation receipts.
 - [Scientific practice](references/scientific-practice.md): long runs,
   comparisons, failures, remote work, and evolving interpretation.
 
-The installed native command's `--help` defines its accepted options. The
-manual states the expected integration interface from the shared architecture.
+`accrete result COMMAND --help` prints the flags.

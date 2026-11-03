@@ -6,26 +6,23 @@
 - Record an activity
 - Amend structured information
 - Append an independent observation
+- Capture selected source
 - Interpret outcomes and retry
 
 ## Interface and input drafts
 
-This manual defines the template v1 interface expected from `accrete-cli`.
-The shared architecture establishes the command families; the template's
-`.accrete/docs/cli-contract.md` defines their integration vocabulary. The
-native executable is supplied separately. Consult its command `--help` for
-accepted arguments and preserve drafts when a different release requires an
-explicit compatibility adjustment. Do not write persistent Result JSON or
-SQLite with a replacement script.
+This manual covers the Result commands. `.accrete/docs/cli-contract.md` has the
+shared conventions and `accrete result COMMAND --help` prints the flags. Do not
+write persistent Result JSON or SQLite with a replacement script.
 
-Global options are `--project PATH` and `--json`; `ACCRETE_PROJECT` selects
+Global options are `--project DIRECTORY` and `--json`; `ACCRETE_PROJECT` selects
 the project when no explicit path is supplied. Otherwise discovery starts
 from the current directory. Select the ACCRETE root explicitly when using an
 external Model checkout. Native scientific commands retain their ordinary
 working directory and execution interface.
 
 Draft structured inputs with an editor or domain Tool. The Kernel owns the
-durable envelope, ID allocation, publication, revision comparison, and index
+durable envelope, default UUID allocation, publication, revision comparison, and index
 projection. Default Result paths are under `results/`; configuration and
 mutation receipts identify the actual path.
 
@@ -38,14 +35,15 @@ accrete --json result record --from scratch/result.json \
 
 The following draft illustrates an analysis for which implementation revisions
 were not retained. It deliberately leaves them unknown. Replace the example
-object UUIDs and domain content with the actual associations before use.
+object IDs and domain content with the actual associations before use.
 
 ```json
 {
+  "name": "first-year-comparison",
   "activity": "Compare selected first-year diagnostics",
   "models": [
     {
-      "model_id": "a0d2c740-7636-4a6c-85b8-244db7e41c21",
+      "model_id": "model-main",
       "role": "target",
       "commit": null,
       "dirty": null
@@ -53,13 +51,13 @@ object UUIDs and domain content with the actual associations before use.
   ],
   "tools": [
     {
-      "tool_id": "bc1d65ba-e284-4827-a9bc-37ad045c5d11",
+      "tool_id": "tool-residual",
       "revision": null
     }
   ],
   "inputs": [
     {
-      "data_id": "57af1e04-2826-485e-9bc9-703c60284d11",
+      "data_id": "year-1-diagnostics",
       "role": "diagnostics"
     }
   ],
@@ -68,36 +66,44 @@ object UUIDs and domain content with the actual associations before use.
     "reported_outcome": "completed",
     "description": "Retrospective description; execution revisions were unavailable."
   },
-  "observations": {
-    "description": "The analysis completed; detailed conclusions are in the linked project notes."
-  },
+  "observations": [
+    {
+      "text": "The analysis completed; detailed conclusions are in the linked project notes."
+    }
+  ],
   "related_results": []
 }
 ```
 
-Omit unused association arrays or unknown fields when the installed schema
-allows. Supply known full Git revisions and observed dirty state instead of
+Omit unused association arrays or unknown fields. Supply known Git revisions and observed dirty state instead of
 nulls when execution information exists. Never fill a historical revision from
 today's checkout just to remove a null.
 
 | Draft field | Meaning |
 | --- | --- |
-| `activity` | A human description of the retained activity. |
+| `name` | Optional short label. The index `name` column falls back to `activity`. |
+| `activity` | Optional human description of the retained activity. |
 | `models[]` | `{model_id, role?, commit: null|string, dirty: null|boolean}`. |
 | `tools[]` | `{tool_id, revision: null|string}` for actual implementation knowledge. |
 | `inputs[]`, `outputs[]` | `{data_id, role?}` associations. |
 | `execution` | Domain-supplied execution description; distinguish execution time from later observation time. |
-| `observations` | Structured measurements, prose, and useful domain context. |
+| `observations[]` | Array of free-form objects, conventionally with `text`: measurements, prose, and useful domain context. |
 | `related_results[]` | `{result_id, role?}` links to legs, attempts, comparisons, or continuations. |
 
-A supplied stable `id` can support retries when creating the same Result.
+A supplied stable `id` or `--id` can support retries when creating the same Result.
 The same ID with the same submitted content is idempotent; different content
-requires an amendment or produces a conflict. Use the full contract's exact
-envelope conventions. Keep unknown project extension fields when constructing
-any replacement or merge input.
+requires an amendment or produces a conflict. IDs are 1-180 ASCII letters, digits,
+dots, underscores or hyphens, and not `.` or `..`. Keep unknown project extension
+fields when constructing any replacement or merge input.
+
+`--name` and `--description` override the draft's fields. `--observe-checkout PATH`
+adds the checkout's current state as a separately labelled `recording_observation`;
+it does not fill any execution revision.
 
 The receipt supplies `object_id`, `path`, and `revision`. Use those values for
-subsequent associations; the filename is not the semantic identity.
+subsequent associations; the filename is not the semantic identity. For a `models[]`
+member with a `commit` and a local checkout, the receipt also names the ref that
+keeps that commit, or a warning saying why it could not.
 
 ## Amend structured information
 
@@ -106,7 +112,7 @@ accrete --json result amend "$RESULT_ID" \
   --from scratch/change.json --expect "$REVISION"
 ```
 
-Template v1 specifies JSON Merge Patch for editable Result fields. Objects
+The patch is a JSON Merge Patch of editable Result fields. Objects
 merge recursively; arrays are replaced as complete arrays; `null` removes a
 key in a patch. Identity, kind, and format fields are not editable through an
 ordinary amendment. Do not use a null patch value to mean unknown without
@@ -126,8 +132,8 @@ For example, a draft adding completion description can contain:
 When changing an association array, read the current Result and include all
 members that should remain. Do not replace the array with only the new member.
 Use the expected revision corresponding to that read. A successful earlier
-receipt is usable only while the document still has that revision; native
-digest computation follows the full contract's revision convention.
+receipt is usable only while the document still has that revision. A revision is
+the SHA-256 of the document's exact bytes, so any SHA-256 tool can compute it.
 
 A revision conflict leaves current content and your draft intact. Read the
 current document, incorporate independent contributions, and submit the intended
@@ -142,14 +148,28 @@ accrete --json result observe "$RESULT_ID" \
 ```
 
 Use this for a new independent observation whose meaning does not require
-replacing the whole description. The Kernel serializes the append locally.
-When a launcher needs retry protection, use the optional `--operation-id`
-supported by the template contract. The same operation ID and payload append
-once; reusing it with changed content is an error.
+replacing the whole description. The Kernel appends a member to the `observations`
+array, serialized locally. When a launcher needs retry protection, supply
+`--operation-id ID`. The same operation ID and text append once; reusing it with
+changed text is a conflict.
 
 Use an amendment for structured corrections or associations. Use later linked
 Memory for a changed scientific interpretation. An observation of a process at
 a particular time does not establish its present state indefinitely.
+
+## Capture selected source
+
+```sh
+accrete --json result capture --checkout ../numerical-model \
+  --path src --path pyproject.toml --to scratch/source-capture
+```
+
+Use this when dirty working source should survive beyond the checkout. It writes a
+binary Git diff against `HEAD` and the selected nonignored untracked regular files to
+a new directory, with a manifest stating the captured scope. Repeat `--path`.
+Ignored products, external dependencies and runtime state stay outside it, so it is
+not a complete executable environment. Capture publishes no object; register the
+directory as Data if it should be retained, and link it from the Result.
 
 ## Interpret outcomes and retry
 
@@ -162,9 +182,9 @@ accrete index refresh
 
 Do not call `result record` with a new ID to repair that projection. After an
 uncertain acknowledgment, use a supplied stable ID or operation ID to reconcile
-the same operation. If publication is visible but durability is uncertain,
-retain its published path and receipt and use the supported recovery route.
-Inspect before interpreting a nonzero exit as “nothing changed.”
+the same operation. If publication is visible but durability is uncertain (exit 8),
+keep the published path and run `accrete recover`. Inspect before interpreting a
+nonzero exit as “nothing changed.”
 
 Recovery repairs metadata or associated native side effects. It never launches
 the scientific calculation again. A new execution is an explicit domain action

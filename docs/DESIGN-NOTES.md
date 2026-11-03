@@ -1,14 +1,13 @@
 # Design basis and template decisions
 
 This repository implements the Agent-facing side of the supplied
-**ACCRETE Architecture Design**, dated 3 November 2026. The source package remains
-the shared interface specification for the independently developed CLI. This
-document identifies the template's decisions so its contents can be maintained
+**ACCRETE Architecture Design**, dated 3 November 2026, which it shares with
+`accrete-cli`. This document identifies the template's decisions so its contents can be maintained
 without importing the historical scientific projects' local conventions.
 
 The archive and individual design document digests are listed in
 [design-input.json](design-input.json) so the exact supplied edition can be
-identified independently of later changes to either implementation repository.
+identified independently of later changes to either repository.
 
 ## Direct architectural commitments
 
@@ -26,6 +25,7 @@ identified independently of later changes to either implementation repository.
 | Selective retrospective admission and trust in prior work in context | 02 §§6–10; 08 §11 |
 | Retained capabilities combine implementation and knowledge | 02 §7; 08 §§2,7–9 |
 | Explicit project guidance upgrades separate from format migration | 07 §§5–7; 09 §§4,8–9 |
+| Two repositories, each publishing its own releases; `accrete-kit` on npm carries the Skills and the Kernel's release binaries, and each Workspace holds its own copy of the Kernel | 07 §§2,10; owner decision of 3 November 2026 |
 
 ## Practical lessons carried into the guidance
 
@@ -54,23 +54,21 @@ separate interface.
 ## Scope of the delivered scaffold
 
 The scaffold installs project instructions, manuals, Skills, and illustrative
-configuration files. Native initialization allocates project identity, writes
-the supported active configuration, and establishes managed roots and its file
-inventory. The source templates contain no fabricated registered Model, Tool,
+configuration files. The npm generator `accrete-kit` allocates project identity, writes
+the marker and its file inventory, and leaves store directories to first use. The source templates contain no fabricated registered Model, Tool,
 Data, Result, or Memory object.
 
 `.accrete/PROJECT.md` is a create-once seed for owner context. Files under
 `.accrete/docs/` and the foundational Skills are release assets. Root instruction
 and ignore/attribute fragments have explicit managed boundaries. Installing into
-an existing project must preserve unrelated content and expose concrete conflicts
-through the native upgrade mechanism described by the integration contract.
+an existing project must preserve unrelated content and expose concrete conflicts as
+candidates, as [the generator](CLI-INTEGRATION.md) describes.
 
 Host-specific worker definitions remain optional: the shared Coordinator and
 Subagent guidance is usable without fixing a host's changing agent configuration
-schema. No package is installed globally by these assets; no model family,
+schema. Nothing is installed globally by these assets; no model family,
 concurrency setting, permission mode, or scientific environment is imposed.
 
-The template's source assets are implemented and distributable independently.
-Execution of object commands and installation/upgrade semantics depend on the
-matching `accrete-cli` implementation. The repository's CLI contract makes that
-boundary explicit without providing a competing native-operation implementation.
+The template's assets and the generator that installs them are developed here and ship as
+`accrete-kit`. Object commands live in `accrete-cli`, and this repository provides no
+competing implementation. The command catalog in `contract/cli-v1.json` describes them.

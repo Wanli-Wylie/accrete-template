@@ -49,7 +49,7 @@ can connect multiple objects and several rounds of experience.
 ## Corrections and uncertainty
 
 Write a later entry when a new observation changes an earlier interpretation.
-Name the earlier entry, state the revised understanding, explain what changed,
+Name the earlier entry with `--supersedes`, state the revised understanding, explain what changed,
 and describe what still holds. Preserve the previous entry so the sequence of
 reasoning remains intelligible.
 

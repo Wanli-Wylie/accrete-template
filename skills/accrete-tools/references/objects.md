@@ -41,13 +41,13 @@ The portable exposure is an ordinary directory with a valid `SKILL.md`. A genera
 
 An explicit symlink can expose the source where supported. A Tool that relies on host-specific substitutions may need a matching adapter or direct link. Keep such host behavior in the adapter or source instructions that explain it; the Tool's meaning can remain independent of a particular Agent host.
 
-Expose project capabilities only at the selected project destination unless the user explicitly chooses another destination. A name collision must be reported or resolved by an explicit different name or replacement choice. Existing unrelated Skills and home-directory configuration are not part of Tool admission.
+Expose project capabilities only at the selected project destination unless the user explicitly chooses another destination. A name collision is reported as a conflict and resolved by a different `--name` or `--destination`. Existing unrelated Skills and home-directory configuration are not part of Tool admission.
 
-Machine-specific absolute source bindings normally stay out of shared Git content. A clone retains the Tool descriptor and resolves its own local source before exposure. Unavailable source on one machine does not retire a capability useful elsewhere.
+Machine-specific absolute source bindings normally stay out of shared Git content. A clone retains the Tool descriptor and sets its own local source with `tool bind` before exposure. Unavailable source on one machine does not retire a capability useful elsewhere.
 
 ## Export and retirement
 
-Export produces selected material at an explicit destination. It can be transferred through Git, npm, a host plugin, or ordinary file transport when the user chooses. Export is a local packaging action and does not imply public publication or installation in another user's environment.
+Export produces a new directory at an explicit destination, containing `tool.json` and `source/`. It can be transferred through Git, npm, a host plugin, or ordinary file transport when the user chooses. Export is a local packaging action and does not imply public publication or installation in another user's environment.
 
 Retirement changes the shared descriptor's current availability and removes or disables exposures managed on the invoking host. It preserves source files and earlier Result references. Other hosts reconcile local exposure after receiving the descriptor and explicitly refreshing it. Retirement cannot erase instructions already loaded in a running conversation or stop an executing program.
 
@@ -63,4 +63,4 @@ If a capability has been replaced, explain the relationship in its description o
 | Tool operates on Model or Data | Domain instructions explain applicable objects and material |
 | Memory explains Tool experience | Lessons, interpretation, and directions for later improvement |
 
-Foundational ACCRETE Skills are installed from the distribution and refreshed explicitly with compatible template assets. Domain Tools evolve according to the project's needs. A Tool declares a Kernel requirement when it invokes Kernel operations; an ordinary plotting capability does not need a new version whenever ACCRETE receives a patch release.
+Foundational ACCRETE Skills are installed by `accrete-kit` and refreshed explicitly with `npx accrete-kit@latest upgrade`. Domain Tools evolve according to the project's needs. A Tool declares a Kernel requirement when it invokes Kernel operations; an ordinary plotting capability does not need a new version whenever ACCRETE receives a patch release.

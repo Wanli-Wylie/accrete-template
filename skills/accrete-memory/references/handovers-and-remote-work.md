@@ -34,17 +34,27 @@ to investigate beyond the supplied paths when the task calls for it.
 ## Exchange entries across hosts
 
 Each host has its own local state and metadata view. Exchange durable Markdown
-through the project's Git practice or the supported document-import route.
-Host-local locks allocate filenames for local writes only. Two disconnected
+through the project's Git practice, or as a metadata bundle when no shared remote
+exists:
+
+```sh
+accrete export --to handoff.json --id MEMORY_ID --id RESULT_ID
+accrete import --from handoff.json
+```
+
+Omit `--id` to export every managed document. The bundle carries documents, not
+scientific payloads, Git objects, Tool source, or machine bindings, so name what stays
+behind in the handover. Import reports each object's outcome and is not atomic;
+repeating the bundle completes what is missing. Host-local locks allocate filenames for local writes only. Two disconnected
 hosts can both publish `memory/2026/11/03/001.md` with different stable IDs.
 
-Preserve both entries when they meet. The importer can allocate a new display
-number for one while retaining its ID and authored instant. If ordinary Git
+Preserve both entries when they meet. `accrete import` allocates a new display
+number for one while retaining its ID and authored instant, and records the original
+path as `origin_path`. If ordinary Git
 reports a path collision, resolve the filenames with that same meaning. Do
 not combine unrelated bodies merely because they selected the same number.
 
-Machine-readable relations use stable IDs. The Kernel may maintain links it
-generated or an import path map; it does not rewrite every arbitrary link in
+Machine-readable relations use stable IDs. The Kernel does not rewrite links in
 authored prose. Update a human path link when necessary while preserving the
 intended target identity.
 

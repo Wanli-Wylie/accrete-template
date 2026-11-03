@@ -24,19 +24,19 @@ For a Model embedded in a research repository, a Memory change can advance `HEAD
 
 Record the commit actually used and optional scoped content identities. Let scientific reasoning determine whether an earlier activity is useful for the current question. A matching scope identity does not make two activities automatically interchangeable.
 
-Allow dirty working trees. A commit plus a dirty observation says that the working material differed from the commit; it does not preserve those differences. An optional bounded capture says exactly which paths were captured and what was omitted. A selected source bundle can be retained as Data and linked in the Result when more material is needed.
+Allow dirty working trees. A commit plus a dirty observation says that the working material differed from the commit; it does not preserve those differences. An optional `accrete result capture` says exactly which paths were captured and what was omitted. A selected source bundle can be retained as Data and linked in the Result when more material is needed.
 
 ## Iterations
 
-An iteration retains a named development effort around a Model. It typically describes a purpose, starting revision, branch or worktree, and eventual outcome. It can begin before development or be attached to work already in progress. It has no required agent session, worker assignment, planning ceremony, or scientific approval state.
+An iteration retains a named development effort around a Model. It typically describes a purpose, starting revision, branch or worktree, and eventual outcome and summary. It can begin before development or be attached to work already in progress. It has no required agent session, worker assignment, planning ceremony, or scientific approval state.
 
 | Moment | Meaning retained by ACCRETE | Work performed through ordinary tools |
 | --- | --- | --- |
-| Open | Purpose, Model, base revision, and Git resources | Choose the question and prepare existing material |
+| Open | Purpose, Model, starting revision, and any worktree | Choose the question and prepare existing material |
 | Develop | Further activity can be associated through Results and Memory | Edit, compile, run, inspect, commit |
 | Integrate | Outcome may name the integrated commits | Merge, cherry-pick, rebase, or retain branches according to the project |
 | Close | Authored outcome, such as integrated or retained separately; relevant revisions | Decide how later work should continue |
-| Clean up | Separate explicit storage action | Remove a specific worktree or branch when appropriate |
+| Clean up | Separate explicit `model iteration remove-worktree` | Delete a branch with Git when appropriate |
 
 The outcome is an authored string. Use the project's language to describe what happened; the examples are not a fixed state enumeration. Closing does not imply success, merge a branch, remove an editing location, or erase outputs. An abandoned implementation can still explain a useful observation. An iteration retained separately can remain the basis of later development.
 
@@ -49,7 +49,7 @@ Use worktrees on the actual Model repository for overlapping edits. An isolated 
 | Relationship | What to retain |
 | --- | --- |
 | Result uses a Model | Model ID, activity role, and execution revision when known |
-| Iteration develops a Model | Model ID, starting revision, purpose, Git resources, and outcome |
+| Iteration develops a Model | Model ID, starting revision, purpose, worktree binding, outcome, and commits |
 | Tool acts on a Model | The Tool explains applicable source, build, diagnostic, or execution conventions |
 | Data captures selected source or output | Its own identity, material description, and origin; the Result links the relevant objects |
 | Memory explains development | Interpretation scoped to the relevant revision, Result, or conditions |
@@ -58,8 +58,10 @@ An association may be meaningful even when the checkout is unavailable locally. 
 
 ## Retaining cited history
 
-The Kernel can retain a locally available cited commit with a native Git ref such as `refs/accrete/retained/<object-id>`. This helps keep an unmerged or detached commit available after ordinary branch cleanup. Read the mutation receipt to learn whether retention succeeded; a read-only repository may remain only a citation.
+The Kernel retains a locally available commit cited by a Result or an iteration close with a native Git ref such as `refs/accrete/retained/<object-id>`. This helps keep an unmerged or detached commit available after ordinary branch cleanup. Read the mutation receipt to learn whether retention succeeded; a read-only repository may remain only a citation.
 
 Those refs are local. Normal clone, push, or bundle behavior must not be assumed to include arbitrary ref namespaces. Transport the specific retained refs when another host needs them, alongside the relevant repository and project metadata. This is native Git work, separate from the Model's identity or an iteration's close operation.
+
+Retiring a Model with `model retire` ends its current use and leaves the repository, checkouts, and earlier Results alone.
 
 The Model ID, commit, worktree, and optional capture answer different practical questions. Keep each association at the scope that was actually observed so the next session can use it without reconstructing an invented certainty.

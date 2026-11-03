@@ -1,41 +1,27 @@
-# Build and delivery notes — 0.1.0
+# Build notes
 
-Executed on 3 November 2026 using Node.js v24.22.1 on Linux.
-The release assembler has no external package dependencies.
+The package has no npm dependencies. `npm run build` assembles `dist/scaffold/`, and
+`npm pack` does so first. `scripts/fetch-kernel.mjs` supplies `dist/kernel/`.
 
-## Completed construction and checks
+## What the build covers
 
-- `npm run check` completed; the final source also completed `node scripts/build.mjs`.
-- Five canonical Skills contain fifteen linked reference manuals.
-- All none/Codex/Claude/both host layouts passed the build's local-link checks.
-- The combined default layout contains 72 installed file destinations.
-- The embedding archive contains 57 regular files and no symlinks.
-- All manifest sizes/digests and all `SHA256SUMS` entries matched archive bytes.
-- Every preview destination matched its manifest's canonical source bytes.
-- Shared defaults and three illustrative configuration files parsed as TOML.
-- Nine JSON input examples parsed and resolved to the named caller-input definitions.
-- The command map was generated from the 24-entry CLI requirement catalog.
-- Two consecutive builds of the final asset content produced identical archive bytes.
-- `node --check scripts/build.mjs` completed successfully.
+- Five canonical Skills with fifteen linked reference manuals.
+- Local-link checks in all none/Codex/Claude/both host layouts.
+- 72 installed file destinations in the combined layout, from 52 stored assets.
+- A command map generated from the 34-entry catalog.
+- Nine JSON input examples, parsed and mapped to named caller-input definitions.
 
-Archive: `accrete-template-0.1.0.tar.gz`
+It checks JSON parsing, example mapping and required top-level draft fields. It is not a
+complete JSON Schema validation engine.
 
-SHA-256: `a6b25ccddd95b7fb5d91396de8bc9768f38b3c822b894546c780e75137c68758`
+## What the tests cover
 
-The machine-readable build report is `dist/build-report.json`. The build checks
-JSON parsing, example mapping and required top-level draft fields; it is not a
-complete JSON Schema validation engine or a native command implementation.
+`npm test` runs the generator against small scaffolds and the assembled one, including
+killing an upgrade at every publication and rerunning it, a stand-in Kernel, `fetch-kernel.mjs`
+against local archives, and the packed tarball reached through `npx`. With a real binary
+fetched, the packed test also installs it and runs its `--version`.
 
-## Integration boundary
-
-This is an `unbound-template` asset release. No companion `accrete-cli` binary
-was supplied or exercised in this session. Native initialization, migration,
-object mutation and ownership-aware upgrades remain in that repository. No live
-Claude Code/Codex discovery session or non-Linux host runtime was exercised.
-Current primary host documentation informs the file layout; see
+`scripts/check-cli-contract.mjs --binary PATH` checks the catalog against a real Kernel;
+the release workflow runs it. No live Claude Code or Codex discovery session was exercised;
+current primary host documentation informs the file layout. See
 [host integration](HOST-INTEGRATION.md).
-
-The supplied Git repository and generated artifacts are ready for owner
-integration. Declare the actual native distribution binding with `--release`
-and `--cli-range` when building the paired release. These flags record the
-integrating release's declaration, not a result of automatic CLI probing.

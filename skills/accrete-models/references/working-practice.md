@@ -26,11 +26,11 @@ For a launch under your control, observe the checkout and relevant environment w
 
 For an activity that already happened, use its launch record, known historical revision, and retained execution material. Today's `HEAD` is not evidence of the previous execution revision. If only the current checkout is available, keep that as a separately timed observation and leave the historical execution identity unknown.
 
-Uncommitted work is normal. If a source capture is useful, decide its scope explicitly. `git diff HEAD` excludes untracked files; text-only diffs may omit the content of binary changes. Neither form captures external dependencies or ignored build products. The Kernel's bounded capture must report its included and omitted scope. A project Tool can prepare a broader source bundle or environment artifact and register it as Data when the task requires that.
+Uncommitted work is normal. If a source capture is useful, decide its scope explicitly. `git diff HEAD` excludes untracked files; text-only diffs may omit the content of binary changes. Neither form captures external dependencies or ignored build products. `accrete result capture --checkout PATH --path SOURCE_PATH --to DIRECTORY` writes a binary diff plus selected untracked files, with a manifest of its scope. A project Tool can prepare a broader source bundle or environment artifact and register it as Data when the task requires that.
 
 ## Carry history to another host
 
-The project metadata can travel through the project's normal Git arrangement while the Model repository travels independently. Source hints and Model IDs remain portable; local bindings resolve each host's concrete paths. A received Result can be read before its Model is downloaded.
+The project metadata can travel through the project's normal Git arrangement, or `accrete export` and `accrete import`, while the Model repository travels independently. Source hints and Model IDs remain portable; `accrete model bind` sets each host's concrete path. A received Result can be read before its Model is downloaded.
 
 When another machine needs an unmerged or detached commit, inspect the relevant repository's retained refs and deliberately transport those refs using native Git. A typical named ref can be sent with an explicit refspec or included in a Git bundle. Use the actual ref named in the receipt, and follow the project's chosen remote and transport arrangement.
 

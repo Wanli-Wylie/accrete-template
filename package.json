@@ -1,17 +1,20 @@
 {
-  "name": "accrete-template",
+  "name": "accrete-kit",
   "version": "0.1.0",
-  "private": true,
-  "description": "Foundational project assets embedded by the ACCRETE native CLI",
-  "license": "UNLICENSED",
+  "description": "Create and upgrade ACCRETE Workspaces",
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/Wanli-Wylie/accrete-template.git" },
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": { "node": ">=20" },
+  "bin": { "accrete-kit": "bin/accrete-kit.mjs" },
+  "files": ["bin/", "lib/", "dist/scaffold/", "dist/kernel/", "LICENSE", "CHANGELOG.md"],
+  "accrete": { "cli": "0.1.0", "cliRepo": "Wanli-Wylie/accrete-cli" },
   "scripts": {
     "build": "node scripts/build.mjs",
-    "check": "node scripts/build.mjs --check"
-  },
-  "files": [
-    "config/", "contract/", "docs/", "schemas/", "scripts/", "skills/",
-    "template/", "template.json", "README.md", "CHANGELOG.md"
-  ]
+    "check": "node scripts/build.mjs --check",
+    "pretest": "node scripts/build.mjs",
+    "test": "node --test test/install.test.mjs test/cli.test.mjs test/kernel.test.mjs test/contract.test.mjs test/package.test.mjs",
+    "prepublishOnly": "node scripts/fetch-kernel.mjs --check",
+    "prepack": "node scripts/build.mjs"
+  }
 }

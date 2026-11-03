@@ -50,25 +50,27 @@ Keep the failed attempt's identity when recording a diagnosis. If a corrected
 implementation is launched again, retain a new Result linked to the earlier
 attempt. A repeated CLI write after an uncertain acknowledgment is different:
 it attempts to persist the same activity description and should reuse its
-stable ID when supported.
+stable ID.
 
 Do not rerun an expensive experiment merely because its JSON index is stale,
 its output location association is incomplete, or its Result needs correction.
-Repair the specific persistence step using the existing activity material.
+Repair the specific persistence step using the existing activity material, with
+`accrete index refresh`, `accrete recover`, or an amendment.
 
 ## Remote work
 
 Record the execution information available where the work runs. Small Result
-documents and Memory can travel by the project's Git or import mechanism while
+documents and Memory can travel by the project's Git or `accrete export` and
+`accrete import` while
 large products remain on the compute host. Materialize selected Data when local
 analysis requires it. Receiving a Result does not imply that its inputs, outputs,
 or cited Git commits were transported with it.
 
 Use host-local Kernel state and a separate metadata view or a selected writing
 host. Local locks and SQLite do not establish coordinated multi-host writes to
-a shared network directory. Where imports meet divergent content under one
-stable ID, preserve both drafts and resolve the difference; do not choose the
-latest timestamp automatically.
+a shared network directory. Where `import` meets divergent content under one
+stable ID, it reports a conflict; preserve both drafts and resolve the difference.
+Do not choose the latest timestamp automatically.
 
 ## Interpretation and accumulated experience
 

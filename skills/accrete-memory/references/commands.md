@@ -10,11 +10,8 @@
 
 ## Interface and native reading
 
-This manual defines the template v1 interface expected from `accrete-cli`.
-The shared architecture establishes `memory append`; the full template
-contract at project-root path `.accrete/docs/cli-contract.md` specifies the
-relation and retry flags. The native executable is supplied separately. Read
-`accrete memory append --help` for the invoked release's accepted interface.
+This manual covers `memory append`. The full contract is at project-root path
+`.accrete/docs/cli-contract.md`, and `accrete memory append --help` prints the flags.
 
 Search and read Memory with ordinary tools. For the default configured root:
 
@@ -29,7 +26,7 @@ Reading Markdown does not require an ACCRETE read command. SQL can query
 the configured host-local projection, whose freshness is independent of the
 durable files.
 
-Global `--project PATH` selects the owning project. `ACCRETE_PROJECT` is the
+Global `--project DIRECTORY` selects the owning project. `ACCRETE_PROJECT` is the
 fallback selection before ancestor-directory discovery. Use the explicit
 selector when a worker operates in an external Model checkout or run directory.
 Global `--json` returns a machine-readable receipt on stdout; diagnostics go
@@ -48,6 +45,8 @@ The Kernel allocates the stable ID, date-based path, authored metadata, and
 requested associations and publishes the complete entry. It returns the ID,
 concrete path, and revision. The source draft remains ordinary working material.
 Do not reserve an empty permanent entry by manually creating its target path.
+`--title TITLE` names the entry, and `--authored-at` supplies an explicit RFC 3339
+instant; the date directory still uses the current project-local day.
 
 Input can be prepared anywhere that the selected host can read. Keep shared
 project content free of native credentials and arbitrary environment dumps.
@@ -56,30 +55,37 @@ its entire raw log.
 
 ## Link objects and earlier understanding
 
-The template v1 interface provides repeatable relation flags:
+Relation flags repeat:
 
 ```sh
 accrete --json memory append --from scratch/understanding.md \
   --result "$RESULT_ID" --data "$DATA_ID" --model "$MODEL_ID"
 ```
 
-Use `--tool TOOL_ID` for relevant capabilities and `--memory MEMORY_ID` for
-earlier entries. Repeating a flag links several objects of that kind. Relations
-may remain unresolved locally when the target belongs to another working
-copy. Supply actual stable IDs and keep readable context in the body.
+Use `--tool TOOL_ID` for relevant capabilities. Repeating a flag links several
+objects of that kind. Relations may remain unresolved locally when the target
+belongs to another working copy. Supply actual stable IDs and keep readable context
+in the body.
 
-For a correction, draft a later entry explaining the change and link the
-earlier entry:
+For a correction, draft a later entry explaining the change and name the entry it
+replaces:
 
 ```sh
 accrete --json memory append --from scratch/correction.md \
-  --memory "$EARLIER_MEMORY_ID" --result "$NEW_RESULT_ID"
+  --supersedes "$EARLIER_MEMORY_ID" --result "$NEW_RESULT_ID"
 ```
 
 Omit a relation whose target does not exist. If there is no new Result, the
 correction can still link earlier Memory and explain its basis in prose.
 The relationship alone does not express the correction's meaning; write what
 changed and why.
+
+For a link `--supersedes` does not describe, such as a related earlier entry or a
+link carrying a revision or role, use `--links-from FILE` with a JSON array:
+
+```json
+[{ "kind": "memory", "id": "EARLIER_MEMORY_ID", "relation": "continues" }]
+```
 
 ## Identity, dates, and concurrent work
 
@@ -93,27 +99,26 @@ writers receive distinct paths. Each worker can submit a complete delegated
 entry using the same operation. The Coordinator may synthesize entries when
 that better preserves the understanding.
 
-Independent hosts can choose the same date and display number. Import preserves
-both IDs and authored instants and may renumber a filename. If Git produces a
-path collision, preserve both complete entries and resolve the paths. Use IDs
+Independent hosts can choose the same date and display number. `accrete import`
+preserves both IDs and authored instants and may renumber a filename. If Git produces
+a path collision, preserve both complete entries and resolve the paths. Use IDs
 for durable associations, and update human path links where necessary.
 
 ## Publication outcomes
 
-When retryability matters, the template v1 interface accepts `--id UUID` and
-`--operation-id UUID`. Retain supplied IDs before submission. Repeating the
-same operation with unchanged content reconciles the same publication; it
-does not allocate another numbered entry. Reusing an ID with different content
-produces a conflict. Use a new entry for a new interpretation.
+When retryability matters, supply `--id ID` from the first attempt: 1-180 ASCII
+letters, digits, dots, underscores or hyphens, and not `.` or `..`. Retain it before
+submission. Repeating with the same ID and unchanged content reconciles the same
+publication; it does not allocate another numbered entry. Reusing an ID with
+different content produces a conflict. Use a new entry for a new interpretation.
 
 `committed: true` means the Markdown publication completed. When
 `index_pending: true` accompanies it, run `accrete index refresh`; do not append
 the entry a second time. If a destination is published but durability is
-reported uncertain, preserve its path and receipt and use the native recovery
-interface for that same publication.
+reported uncertain (exit 8), keep its path and run `accrete recover`.
 
 Input rejection before publication leaves the draft available for correction.
 Lost acknowledgments and partial publication require inspecting the specific
-receipt or destination before retrying. Kernel recovery concerns publication
-and projection; it never reruns an experiment or rewrites the interpretation
+receipt or destination before retrying. Recovery concerns publication and
+projection; it never reruns an experiment or rewrites the interpretation
 on the agent's behalf.

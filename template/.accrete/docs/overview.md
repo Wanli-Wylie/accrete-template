@@ -22,9 +22,9 @@ the intended ACCRETE project.
 
 | Object | Why it is retained | What changes through the Kernel | Natural working interface |
 |---|---|---|---|
-| Model | A computational program that continues to evolve | Registration, host binding, opening and closing an iteration | Git, editor, compiler, model runtime |
-| Tool | An ability worth using again, including knowledge and executable work | Admission, metadata/revision selection, exposure, refresh, retirement, export | Its source directory, native language tools, Skill instructions |
-| Data | An input or product selected for continued use | Registration, locations, managed materialization | Filesystem, storage tools, scientific format readers |
+| Model | A computational program that continues to evolve | Registration, host binding, update, retirement, opening and closing an iteration, removing its worktree | Git, editor, compiler, model runtime |
+| Tool | An ability worth using again, including knowledge and executable work | Admission, host binding, metadata/revision selection, exposure, refresh, retirement, export | Its source directory, native language tools, Skill instructions |
+| Data | An input or product selected for continued use | Registration, amendment, locations, managed materialization and eviction, retirement | Filesystem, storage tools, scientific format readers |
 | Result | A retained account of an activity and its observations | Creation, amendment, appended observations | JSON readers and the local SQLite projection |
 | Memory | Understanding, decisions, experience, and future direction | Publication of complete authored prose and associations | Markdown, file search, ordinary reading |
 
@@ -54,11 +54,13 @@ information as unknown and retain supplied context without fabricating it.
 
 ## Where to work
 
-The initialized defaults place small object descriptors in `.accrete/objects/`,
-Results in `results/`, dated Memory in `memory/`, Tool sources in `tools/`, and
-ongoing work in `scratch/`. Empty stores may be created lazily. Shared
-`.accrete/project.toml` defines logical roots; ignored `.accrete/local.toml`
-binds this host's paths. Configuration can place all of these elsewhere.
+The defaults place small object descriptors in `.accrete/objects/`, Results in
+`results/`, dated Memory in `memory/`, Tool sources in `tools/`, managed Data
+replicas in the ignored `.accrete/data/`, and ongoing work in the ignored
+`scratch/`. Creating a Workspace writes only `.accrete/project.toml`, the installed
+assets and the ignored Kernel binary at `.accrete/bin/accrete`; store directories appear on first use. Shared `.accrete/project.toml`
+defines logical roots; ignored `.accrete/local.toml` binds this host's paths.
+Configuration can place all of these elsewhere.
 
 Foundational Skills are ordinary directories under `.agents/skills/` for Codex
 and `.claude/skills/` for Claude Code. Each contains concise instructions and
@@ -87,17 +89,17 @@ projection. It does not rerun the activity. A mutation receipt with
 `committed: true` and `index_pending: true` means the object already exists and
 only indexing remains.
 
-Query the schema supplied by the installed Kernel. Inspect it with SQLite's
-native `.schema` before assuming table or column names. The projection describes
+Open the index with `sqlite3 -readonly` at the path in `.local_state.index` from
+`accrete config resolve --json`, and inspect `.schema` before assuming table or column
+names. A brief "database is locked" during a concurrent refresh means retry. The projection describes
 its last successful refresh of this metadata view, and does not establish live
 process state or current remote availability.
 
-The installed binary's `--help` describes its available arguments. Read
-[the CLI contract](cli-contract.md) and [command reference](cli-commands.md) for
-the template's expected interface and compatibility boundary before a new kind
-of managed write. When the binary is unavailable,
-continue native work and preserve drafts for later submission. Do not recreate
-the Kernel with ad hoc descriptor-writing scripts.
+Read [the CLI contract](cli-contract.md) and [command map](cli-commands.md) before
+a new kind of managed write; `accrete COMMAND --help` prints the flags. When an
+operation stops partway, `accrete recover` finishes it from its receipt. On a host
+without the binary, continue native work and preserve drafts for later submission.
+Do not recreate the Kernel with ad hoc descriptor-writing scripts.
 
 ## Further guidance
 
@@ -111,7 +113,6 @@ the Kernel with ad hoc descriptor-writing scripts.
   state.
 - [Remote work](remote-work.md): computation and metadata exchange across hosts.
 
-The project's selected template release, compatible CLI range, and project format
-range are supplied with the installed assets. Installing a different binary
-does not rewrite this guidance or migrate project documents. Explicit project
-upgrade and migration operations handle those distinct changes.
+These manuals and Skills come from the npm generator `accrete-kit`;
+`.accrete/release.json` names the version that installed them. Installing a different
+Kernel does not rewrite this guidance or migrate project documents. `npx accrete-kit@latest upgrade` and `accrete migrate` handle those distinct changes.

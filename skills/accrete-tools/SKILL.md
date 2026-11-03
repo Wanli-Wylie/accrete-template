@@ -1,6 +1,6 @@
 ---
 name: accrete-tools
-description: Retain and evolve ACCRETE project capabilities as Tools. Use when a useful script, program, knowledge guide, diagnostic, or Skill should acquire a project identity; when updating its selected source, exposing it to Codex or Claude Code, refreshing discovery, exporting a local package, or retiring current use while preserving earlier associations.
+description: Retain and evolve ACCRETE project capabilities as Tools. Use when a useful script, program, knowledge guide, diagnostic, or Skill should acquire a project identity; when updating or binding its selected source, exposing it to Codex or Claude Code, refreshing discovery, exporting a local package, or retiring current use while preserving earlier associations.
 ---
 
 # ACCRETE Tools
@@ -18,8 +18,9 @@ Keep code and knowledge together where that helps another Agent use the Tool. Ex
 ## Use the right organizational operation
 
 - Admit existing source with `tool admit` when it should become a retained project capability.
+- Use `tool bind` to point this host at the Tool's source when it lives elsewhere here.
 - Use `tool update` for descriptor changes or a deliberately selected source revision.
-- Use `tool expose` to add a project-local host discovery interface; use `tool refresh` to update existing managed discovery after source or description changes.
+- Use `tool expose --agent codex|claude` to add a project-local discovery interface; use `tool refresh` to update existing managed discovery after source or description changes.
 - Use `tool export` for an explicit local destination when material should be reused elsewhere.
 - Use `tool retire` when ordinary discovery should stop; preserve the source and earlier Result associations.
 
@@ -44,7 +45,7 @@ Retain interpretation and reusable lessons in Memory, and improve the Tool when 
 ## References
 
 - [Object meaning and relationships](references/objects.md): Capability, Tool, Skill, live and retained binding, identities, and retirement.
-- [Kernel operations](references/cli.md): input drafts, expected command forms, exposure destinations, receipts, and incomplete operations.
+- [Kernel operations](references/cli.md): input drafts, command forms, exposure destinations, receipts, and incomplete operations.
 - [Developing useful capabilities](references/working-practice.md): agent-oriented instructions, source-relative resources, long-term improvement, and use from different hosts.
 
-Read the installed `.accrete/docs/cli-contract.md` from the project root for the shared contract and release compatibility. Use the invoked binary's `--help` for available options. If required CLI support is missing, retain its input draft in Scratch and report the missing operation while continuing useful source development.
+Read the installed `.accrete/docs/cli-contract.md` from the project root for the shared contract. `accrete tool COMMAND --help` prints the flags. On a host without the binary, retain input drafts in Scratch and continue useful source development.

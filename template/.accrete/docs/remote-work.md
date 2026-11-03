@@ -1,9 +1,9 @@
 # Working across machines
 
 Use ordinary SSH, transfer tools, domain launchers, and site schedulers for remote
-computation. Install the native Kernel on the host where managed metadata writes
-occur. It can run directly without Node.js once the matching native binary is
-available. ACCRETE does not need a remote coordinator service.
+computation. The Kernel is needed on the host where managed metadata writes occur. It is
+one native executable that runs without Node.js. ACCRETE does not need a remote coordinator
+service.
 
 ## Establish the working context
 
@@ -11,7 +11,23 @@ Share the project's small configuration and documents through its normal Git or
 explicit transfer arrangement. A remote clone has the same project identity and
 its own ignored `.accrete/local.toml`, local metadata-view index, and operation
 state. Native Model repositories may be obtained separately and bound to the
-appropriate aliases on that host.
+appropriate Models with `accrete model bind` on that host; `accrete tool bind` does
+the same for Tool source.
+
+`.accrete/bin/` is ignored by Git, so each clone restores its own Kernel. With Node on the
+host, run this at the Workspace root, using `template_version` from `.accrete/release.json`:
+
+```sh
+npx accrete-kit@<version> install
+```
+
+On a host without Node, take the archive for that host from the `accrete-cli` GitHub Release
+at `kernel_version` from `.accrete/release.json`, and extract it into the Workspace:
+
+```sh
+mkdir -p .accrete/bin
+tar -xzf accrete-<version>-<target>.tar.gz --strip-components=1 -C .accrete/bin
+```
 
 Name the actual Model revisions, input locations, execution directory, domain
 Tool, and current resource constraints in the assignment. Supply the relevant
@@ -41,32 +57,46 @@ does not compel copying or hashing every member of a large remote tree.
 ## Bring back portable descriptions
 
 Exchange Result JSON, Data/Model/Tool descriptors, and selected Memory through
-ordinary Git or the Kernel's supported import path. Preserve supplied IDs and
-historical revisions. Do not copy the remote live SQLite database as the durable
-project description; refresh a local projection from the received documents.
+ordinary Git, or as a metadata bundle when no shared remote exists:
+
+```sh
+accrete export --to handoff.json --id RESULT_ID --id MEMORY_ID
+accrete import --from handoff.json
+```
+
+Omit `--id` to export every managed document. A bundle carries documents, IDs,
+revisions and Memory paths. It leaves out scientific payloads, Git objects, Tool
+source and machine bindings. Preserve supplied IDs and historical revisions. Do not
+copy the remote live SQLite database as the durable project description; refresh a
+local projection from the received documents.
 
 An unresolved relation is acceptable when the referenced repository or Data is
 still remote. A Memory filename collision between independent hosts does not
-mean the entries are the same; the stable IDs distinguish them and the native
-import operation allocates the receiving path. Divergent content under one
-identity requires a deliberate merge, rather than last-writer-wins replacement.
+mean the entries are the same; the stable IDs distinguish them and `import`
+allocates the receiving path. Divergent content under one identity is reported as a
+conflict and needs a deliberate merge, rather than last-writer-wins replacement. To
+replace a predecessor on purpose, add its current byte revision as `expected_revision`
+in that bundle entry.
 
-Use the CLI contract for supported import syntax. Keep drafts intact if that
-binary does not yet support a required import. Do not build a second importer in
-a foundational Skill.
+Import reports each object's outcome and is not atomic. A partial batch exits 7 with
+a nonzero `failed` count, and its successful entries stay committed. Repeating the
+same bundle acknowledges those and completes the rest. A bundle from another project
+needs `--allow-foreign`, which keeps its original project IDs.
 
 ## Materialize what analysis needs
 
 Read already available bytes with native readers. To create a managed replica,
 use `data materialize` with a configured source and destination. The Kernel
-handles the location association while a native adapter performs the transfer.
-A project already using DVC, DataLad, or site transfer software can use that tool
-and add the completed location through the CLI.
+handles the location association while a local copy or rclone download performs the
+transfer. Uploads are native rclone work followed by `data location add`. A project
+already using DVC, DataLad, or site transfer software can use that tool and add the
+completed location the same way.
 
 Publication of transferred bytes and publication of the location description are
-separate completion points. Keep the command's receipt if one completes without
-the other. Continue or reconcile that operation using the named surviving paths;
-do not restart the simulation to repair metadata or transfer state.
+separate completion points. If one completes without the other, run `accrete
+recover` on that host: it finishes publication from the receipt and reports an
+incomplete transfer with its paths for explicit retry. Do not restart the simulation
+to repair metadata or transfer state.
 
 A local analysis can then produce its own Result and Memory linked to the
 original remote products. This retains the relationship between production,
@@ -90,5 +120,6 @@ Name the activities actually completed, relevant code revisions and runtime
 context, Result and Data IDs, concrete retained paths, and outstanding work.
 State what remains only on the remote host and which products are already
 available for analysis. Preserve useful source or selected outputs before
-removing their temporary worktree or execution directory. Let the owner's task
+removing their temporary worktree with `accrete model iteration remove-worktree` or
+their execution directory with ordinary tools. Let the owner's task
 determine the format and extent of the handover.

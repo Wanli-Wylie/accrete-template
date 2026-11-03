@@ -44,8 +44,8 @@ Trust earlier retained work within its described scope. A new question, changed 
 
 ## Work across hosts and share deliberately
 
-Carry shared source and descriptor changes through ordinary version control. Resolve concrete machine bindings locally and refresh discovery on each host that needs it. If a source directory is temporarily absent on one machine, the Tool remains part of the project. Use it where the material is available or restore the binding when needed.
+Carry shared source and descriptor changes through ordinary version control. Set concrete machine bindings with `tool bind` and run `tool refresh` on each host that needs it. If a source directory is temporarily absent on one machine, the Tool remains part of the project. Use it where the material is available or restore the binding when needed.
 
 The CLI reports which interfaces it refreshed. A running Agent can still have earlier instructions in context; subsequent work can read the new source explicitly or use the host's documented refresh behavior. Discovery changes do not replace a running program or retrospectively change an activity.
 
-Export selected material to a named local destination when another project should reuse it. Review the intended contents as ordinary packaging work, include its usable instructions and needed source, and keep host-specific absolute paths out of portable guidance. Public distribution remains the user's chosen Git, npm, or plugin action. Preserve origin information so the receiving project can understand how its capability relates to the original.
+Export to a new local directory with `tool export` when another project should reuse the capability; it writes `tool.json` and `source/`. Review the contents as ordinary packaging work, and keep host-specific absolute paths out of portable guidance. Public distribution remains the user's chosen Git, npm, or plugin action. `tool.json` lets the receiving project understand how its capability relates to the original.

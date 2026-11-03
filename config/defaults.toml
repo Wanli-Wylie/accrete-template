@@ -1,5 +1,5 @@
-# Native init merges these defaults, chooses a timezone, and inserts project_id.
-# This file is a release input; it is not an initialized project marker.
+# The generator inserts project_id and name and applies --timezone. This file is
+# package input; it is not a Workspace marker.
 format = 1
 timezone = "UTC"
 
@@ -14,6 +14,7 @@ scratch = "scratch"
 kind = "filesystem"
 purpose = "selected locally materialized scientific products"
 
-# The Kernel supplies an explicit, host-local root for locations.working.
+# locations.working defaults to .accrete/data under the Workspace root, which the
+# template's .gitignore block ignores; .accrete/local.toml can place it elsewhere.
 # Model checkouts, host names, interpreters, state directories and transfer
 # credentials are deliberately absent from shared defaults.

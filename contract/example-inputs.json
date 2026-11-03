@@ -4,7 +4,7 @@
   { "file": "template/.accrete/examples/iteration-close.json", "definition": "iterationClose" },
   { "file": "template/.accrete/examples/tool-admit.json", "definition": "toolAdmit" },
   { "file": "template/.accrete/examples/tool-update.json", "definition": "toolUpdate" },
-  { "file": "template/.accrete/examples/tool-retire.json", "definition": "toolRetire" },
+  { "file": "template/.accrete/examples/tool-retire.json", "definition": "retire" },
   { "file": "template/.accrete/examples/data-register.json", "definition": "dataRegister" },
   { "file": "template/.accrete/examples/result-record.json", "definition": "resultRecord" },
   { "file": "template/.accrete/examples/result-amend.json", "definition": "resultAmend" }

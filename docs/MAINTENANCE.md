@@ -1,7 +1,7 @@
 # Maintaining accrete-template
 
-Maintain the five Skills, project guidance, and release description in this
-repository. Keep persistence and initialization mechanics in `accrete-cli`.
+Maintain the five Skills, project guidance, and the `accrete-kit` generator in this
+repository. Keep object persistence in `accrete-cli`.
 The template's design basis is documented in [DESIGN-NOTES.md](DESIGN-NOTES.md).
 
 ## Edit the canonical source
@@ -12,9 +12,11 @@ The template's design basis is documented in [DESIGN-NOTES.md](DESIGN-NOTES.md).
 | Project entry text or operating guidance | `template/AGENTS.md`, `template/CLAUDE.md`, or `template/.accrete/docs/` |
 | Initial owner context | `template/.accrete/PROJECT.md`; existing projects preserve their copy |
 | Shared logical defaults | `config/defaults.toml` |
-| Profiles, file ownership, initialization recipe, or upgrade locations | `template.json` |
-| Command spelling, expected inputs, or receipts | `contract/cli-v1.json` and the authored CLI semantics manual |
-| Bundle representation | `schemas/` and `scripts/build.mjs`, with corresponding format documentation |
+| Profiles and file ownership | `template.json` |
+| Creation, upgrade and conflict behavior | `lib/`, `test/` and [the format](TEMPLATE-FORMAT.md), together |
+| The embedded Kernel and where it is released | `accrete.cli` and `accrete.cliRepo` in `package.json`, the one place the repository is named |
+| Command spelling, inputs, or receipts | `contract/cli-v1.json`, the authored CLI semantics manual, the Skill references, and `accrete-cli`, in one change |
+| Scaffold representation | `schemas/`, `scripts/build.mjs` and `lib/scaffold.mjs`, with corresponding format documentation |
 
 Keep each Skill's frontmatter name equal to its directory name. Use only `name`
 and `description` in the foundational frontmatter, and keep descriptions useful
@@ -29,94 +31,87 @@ layouts.
 
 Preserve managed section markers when editing root fragments. Changes to owner
 guidance belong outside those markers or in the create-once project context.
-The bundle inventory covers only installed assets; it never inventories all
+The Workspace inventory covers only installed assets; it never inventories all
 scientific working files.
 
 ## Build a change
 
-Node.js 22 or newer is sufficient; no npm dependencies are installed.
+Node.js 20 or newer is sufficient; there are no npm dependencies.
 
 ```sh
 npm run check
 npm run build
+npm test
 ```
 
-The check performs the same asset assembly in memory and reports its counts and
-digest without writing `dist/`. A build replaces its versioned bundle directory
-and preview, then writes the archive, checksum, and `build-report.json`.
-Keep unrelated work outside those generated locations.
+The check performs the same assembly in memory and reports its counts without writing
+`dist/`. A build replaces `dist/`. `npm test` builds first.
 
-Inspect the changed Skills or manuals in `dist/preview/` when destination context
-helps. The preview deliberately omits project identity and active configuration.
-Use the integrated native CLI for real initialization; do not turn the build
-script into an alternate installer.
+To see a change in place, run the bin on a scratch directory:
 
-Checks are confined to release properties: parsable JSON, valid foundational
-frontmatter, references, managed sections, portable unique paths, profile-aware
-links, and consistent bundle digests. They do not evaluate scientific quality,
-run an Agent, execute object mutations, or demonstrate cross-platform native
-filesystem behavior.
+```sh
+node bin/accrete-kit.mjs /tmp/trial --no-install
+node bin/accrete-kit.mjs upgrade --project /tmp/trial --dry-run --no-install
+```
 
-## Version and bind a release
+Checks are confined to package properties: parsable JSON, valid foundational frontmatter,
+references, managed sections, portable unique paths and profile-aware links. They do not
+evaluate scientific quality, run an Agent, or execute object mutations.
 
-Update `package.json` and `CHANGELOG.md` for a template release. The package
-version identifies this source release and determines the bundle/archive name.
-Keep three separate meanings explicit:
+## Release
+
+Update `package.json` and `CHANGELOG.md`, then tag `vX.Y.Z`. Keep the meanings separate:
 
 | Version | Meaning |
 |---|---|
-| Template version | Version of these maintained assets |
-| Distribution version and CLI range | Integrating release's declaration of which binary carries and supports them |
-| Project format range | Managed document formats for which the guidance is written |
+| Package version | These assets and this generator, also called the template version |
+| `accrete.cli` | The exact Kernel release this version embeds and was written for |
+| Project format range | Workspace formats for which the guidance is written |
 
-An independent build leaves distribution compatibility unbound. For an integrated
-release, supply both options:
+The tag runs `.github/workflows/release.yml`: it runs the checks, fetches the declared Kernel
+for all four platforms from the `accrete-cli` GitHub Release, runs the tests, runs
+`scripts/check-cli-contract.mjs` against the embedded binary for its runner, and publishes with
+npm trusted publishing. So the `accrete-cli` release comes first; a missing or drifted Kernel
+stops the release before anything is published. Register the workflow as this package's
+trusted publisher on npm once.
+
+For local work, fetch what you have, then pack:
 
 ```sh
-npm run build -- --release "$ACCRETE_DISTRIBUTION_VERSION" \
-  --cli-range "$ACCRETE_CLI_VERSION_RANGE"
+node scripts/fetch-kernel.mjs --from DIR --allow-partial
+npm pack
+node scripts/check-cli-contract.mjs --binary dist/kernel/darwin-arm64/accrete
 ```
 
-The values must come from the integrating release. The build requires a semantic
-distribution version and a one-line range string, but it cannot establish that
-the selected binary implements every command. The CLI release pipeline owns that
-integration. Update the command contract and manuals together when supported
-behavior changes.
-
-Fixed archive metadata and sorted paths make equivalent build inputs produce
-stable release content. `SHA256SUMS` describes bundle members other than itself;
-the adjacent `.tar.gz.sha256` describes the archive. Pin the source Git revision
-and preserve the produced bundle when incorporating it into a CLI release.
+`--allow-partial` is for local development only. `npm publish` runs `fetch-kernel.mjs --check`
+and fails unless all four platforms are in place at the declared version.
 
 ## Maintain upgrade behavior
 
-The manifest distinguishes whole managed files, managed blocks, and create-once
-seeds. Native initialization stores the installed base and its digest. A later
-native upgrade compares that base with the current content and the requested
-asset. It preserves owner edits and gives a concrete candidate when direct
-replacement would lose them.
+The manifest distinguishes whole managed files, managed blocks, and create-once seeds.
+Creation stores the installed base and its digest. A later upgrade compares that base with
+the current content and the incoming asset. It preserves owner edits and gives a concrete
+candidate when direct replacement would lose them.
 
-When retiring an asset, document its successor if one is needed. The native
-updater can remove unchanged managed content; edited files remain for deliberate
-resolution. Never classify a domain Tool source as a foundational asset merely
+When retiring an asset, document its successor if one is needed. The upgrader removes
+unchanged managed content; edited files remain for deliberate resolution. A locally deleted
+file stays deleted. Never classify a domain Tool source as a foundational asset merely
 because it happens to live under a host's Skill directory.
 
-Keep package upgrades, guidance upgrades, and persisted-format migration
-separate in the manuals. The template release must not assert that installing
-a binary updates all projects or that a changed command revises past Results.
+Keep Kernel upgrades, guidance upgrades, and persisted-format migration separate in the
+manuals. The template must not assert that installing a Kernel updates all projects or that
+a changed command revises past Results.
 
-See [CLI-INTEGRATION.md](CLI-INTEGRATION.md) for the installer/updater contract
-and [TEMPLATE-FORMAT.md](TEMPLATE-FORMAT.md) for concrete manifest fields and
-conflict resolution behavior.
+See [the generator](CLI-INTEGRATION.md) for commands and receipts and
+[the format](TEMPLATE-FORMAT.md) for concrete manifest fields and conflict behavior.
 
-## Keep the repository independent
+## Keep the boundary
 
-Do not copy Kernel code or native operation logic into this repository to make
-an unimplemented command appear available. Describe the required behavior and
-retain a useful draft or input example. Small release assembly code is part of
-this repository; runtime object writes remain the companion CLI's responsibility.
+Do not copy Kernel code or native operation logic into this repository. The generator
+writes template-derived files, the marker and the Kernel binary; runtime object writes belong
+to `accrete-cli`, and a command the catalog lists has to exist there. The only time the
+generator runs a Kernel is `--version`, to decide whether one already there still works.
 
 Do not install personal or user-global Skills as part of maintenance. These are
-project assets installed through the selected native initialization profile.
-The repository is private build metadata by default, has no automatic public
-publication, and makes no choice of owner licensing beyond `UNLICENSED`.
+project assets installed by the generator for the selected agents. The package is MIT
+licensed, and each embedded Kernel keeps its own notices beside it.

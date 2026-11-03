@@ -19,9 +19,11 @@ bytes within its stated scope. Keep those three meanings separate.
 | Produce intermediate outputs or explore a transformation | Work in Scratch or the producer's own directory. |
 | Retain a useful product in place | Call `accrete data register`. |
 | Describe an external dataset before downloading it | Register its locator and known content/version information. |
+| Correct a description | Call `accrete data amend` using the current revision. |
 | Associate an existing additional copy | Call `accrete data location add`. |
 | Obtain a managed usable copy | Call `accrete data materialize`. |
 | Remove one managed copy while preserving its meaning | Call `accrete data evict` for that exact replica. |
+| End current use without removing bytes | Call `accrete data retire`. |
 
 Registration need not copy, archive, upload, traverse, or fully hash a dataset.
 Supply the information already available, and request additional byte work
@@ -33,9 +35,9 @@ accessible on the current machine.
 Register a completed product when its relevant writes have finished. When
 working with a live source or open collection, describe it that way. A stable
 path to changing bytes does not identify a historical snapshot. Adding a
-replica or correcting a description can amend an existing descriptor;
-corrected scientific content normally receives a new Data ID related to the
-previous edition. Keep earlier Results associated with the material they
+replica or correcting a description changes an existing descriptor; corrected
+scientific content normally receives a new Data ID naming the previous one in
+`replaces`. Keep earlier Results associated with the material they
 actually used.
 
 Use the Result Skill to describe the producing or consuming activity. Link
@@ -53,20 +55,19 @@ configured paths and mutation receipts identify the actual locations. When
 working outside the ACCRETE root, select it explicitly with `--project`.
 
 Draft registration inputs in ordinary files; publish managed descriptors
-through the native CLI. Use its returned ID and concrete path. If metadata
+through `accrete`. Use its returned ID and concrete path. If metadata
 was committed but indexing is pending, refresh the index without registering
-another object. If a transfer is incomplete, use the surviving paths and
-receipt to continue it; metadata repair never requires rerunning the producer.
+another object. If a transfer or eviction stopped partway, run `accrete recover`;
+it finishes from the receipt and reports an incomplete transfer with its paths.
+Metadata repair never requires rerunning the producer.
 
 ## Read when needed
 
 - [Objects and native work](references/objects-and-native-work.md): identity,
   content editions, collections, relationships, and reading existing material.
-- [Command manual](references/commands.md): registration, location changes,
-  materialization, eviction, input drafts, and operation outcomes.
+- [Command manual](references/commands.md): registration, amendment, retirement,
+  location changes, materialization, eviction, input drafts, and operation outcomes.
 - [Remote work and retention](references/remote-and-retention.md): host
   placement, scientific outputs, large transfers, and borrowed locations.
 
-The installed native command's `--help` defines its accepted options. The
-reference manual states the template's expected CLI interface and identifies
-details that the architecture leaves to integration.
+`accrete data COMMAND --help` prints the flags.

@@ -20,12 +20,12 @@ observations. Useful information includes:
 | Tool IDs and observed implementations | Identify capabilities used to obtain the observations. |
 | Input and output Data with roles | Connect retained materials to their use. |
 | Execution description | Preserve supplied host, environment, arguments, times, and runtime details. |
-| Observations | Hold small measurements or prose; link larger products as Data. |
+| Observations | An array holding small measurements or prose; link larger products as Data. |
 | Related Results | Connect comparisons, independent legs, attempts, and continuations. |
 
-Only the supported small envelope is mechanically required by the Kernel.
-Leave unavailable information absent or explicitly unknown according to the
-installed schema. Keep domain fields supplied by the scientific Tool. The
+No field of a Result input is mechanically required by the Kernel. `execution` and
+`observations` are free-form. Leave unavailable information absent or explicitly
+null. Keep domain fields supplied by the scientific Tool. The
 Kernel need not understand a climate calendar, numerical diagnostic, or
 performance metric to preserve it.
 
@@ -51,7 +51,8 @@ binary, Python environment, and runtime arguments.
 Exploratory dirty work is valid. State the observed commit and known changes.
 A patch may omit untracked files, ignored files, binary content, or external
 dependencies; name the capture scope without claiming complete recovery.
-Register selected source bundles or environment artifacts as Data if the
+`accrete result capture` writes a selected diff and untracked files with a manifest
+of that scope. Register selected source bundles or environment artifacts as Data if the
 project chooses to retain them.
 
 ## Publication, drafts, and activity completion
@@ -101,12 +102,13 @@ Use ordinary tools to inspect the actual representation. For default roots:
 
 ```sh
 rg 'routing|compilation|comparison' results
-jq '.observations' /actual/result/document.json
+jq '.observations[]' /actual/result/document.json
 ```
 
 Select actual paths from configuration or mutation receipts. Read Git history
-with Git and output arrays with their scientific libraries. Inspect `.schema`
-before writing SQL against an unfamiliar index release. The index is a
+with Git and output arrays with their scientific libraries. Open the index with
+`sqlite3 -readonly` at the path in `.local_state.index` from `accrete config resolve
+--json`, and inspect `.schema` before writing SQL. A brief "database is locked" during a concurrent refresh means retry. The index is a
 host-local projection; a Git pull can update documents before it is refreshed.
 `accrete index refresh` repairs that projection without changing the activity.
 

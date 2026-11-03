@@ -1,185 +1,134 @@
-# Integrating accrete-template into accrete-cli
+# The generator and the Kernel
 
-## Purpose and boundary
+## The seam
 
-This repository is the independently maintained asset source for the ACCRETE
-native distribution. The shared design is `ACCRETE-Architecture-Design`, edition
-3 November 2026, particularly documents 04, 06, 07 and 08. The template is complete
-as an asset package. Runtime installation, project initialization, migration,
-managed object writes and upgrades belong to the native CLI.
+A Workspace is an independent Git project owned by the user, not a fork kept in sync
+with the template. `accrete-kit` creates and maintains it, general-purpose coding agents work in
+it, and the Kernel provides the native persistent infrastructure. Each repository
+maintains and publishes its own releases.
 
-The only executable code here is the release assembler. It reads this repository
-and writes its own `dist/` output. It does not accept an installation destination,
-allocate project IDs, write object descriptors, open SQLite, invoke Git, perform
-data transfers, expose project Tools, or change an existing research project.
-
-The archive is a build input for the CLI repository, not a third user-facing npm
-runtime package. `package.json` is private and supplies a dependency-free build
-entry. Scientific projects require neither this build program nor Node.js for
-native ACCRETE operations.
-
-## Consume the release assets
-
-Pin a commit/tag of this repository in the CLI build, either as a Git dependency,
-submodule or downloaded release asset with its digest. A source checkout builds
-offline with Node.js 22 or later:
-
-```sh
-npm run check
-npm run build
-```
-
-`dist/accrete-template-0.1.0/manifest.json` describes every installed destination,
-its source bytes, host profile, digest and ownership. The directory also contains
-canonical assets, configuration defaults, the CLI expectation catalog, schemas
-and `SHA256SUMS`. The adjacent tar.gz is the same content in a deterministic
-regular-file archive. Its `.sha256` identifies the archive bytes. No symlinks or
-executable installation hooks are required.
-
-An independent template build sets `distribution_version` and `cli_version_range`
-to null and marks compatibility `unbound-template`. It does not claim compatibility
-with a binary that was never supplied. When building a concrete CLI distribution,
-declare the release binding:
-
-```sh
-node scripts/build.mjs --release 0.1.0 --cli-range '>=0.1.0 <0.2.0'
-```
-
-Those are illustrative release values. Use the native release's actual version
-and supported command range. The assembler records the declaration; it cannot
-establish that the separately developed CLI implements it. Match
-`contract/cli-v1.json`, input drafts and the semantic manuals before selecting a
-public binding. `template_version` continues to identify the source assets even
-if the integrating distribution uses another version.
-
-Embed the manifest and referenced bytes in the Rust executable at compile time.
-The choice of `include_bytes!`, an existing embedding crate or equivalent static
-asset module stays with the CLI repository. Runtime `init` and `project upgrade`
-read those embedded bytes without fetching an independent latest template. The
-binary's release version must equal the manifest's bound `distribution_version`.
-
-The initializer, launcher and platform payload packages then carry exact matched
-native release versions as specified in design document 07. The same executable
-and assets can be delivered as a native archive for remote compute hosts. Their
-packaging and npm publication live in `accrete-cli`.
-
-## What native initialization does
-
-1. Resolve the explicit target and selected host profiles. The default profiles
-   are `codex` and `claude`; `--agents none` is supported for shared manuals only.
-2. Determine which exact paths the manifest would affect. An existing project
-   marker is not a request to replace its identity. Repeated initialization must
-   preserve the existing ID and configuration; use explicit upgrade/migration
-   operations for change.
-3. Read `config/defaults.toml`. The Kernel allocates a UUID, selects the explicit
-   project timezone or the UTC default, and serializes `.accrete/project.toml`
-   using its supported schema. Local overrides and configured physical roots
-   remain separate. No active credential, interpreter, host or absolute path is
-   hard-coded in the asset defaults.
-4. Install selected files according to ownership. Materialize each foundational
-   Skill as a real directory under the host's discovery root. Common assets are
-   independent of the host selection. Preserve any preexisting owner content.
-5. Publish `.accrete/template-install.json` and the small retained asset bases
-   after the corresponding files are written. Each path's completed outcome is
-   recoverable; a file set is not advertised as an atomic filesystem transaction.
-6. Use configured paths for stores, creating empty directories lazily. Resolve
-   host-local state through the Kernel; it must not accidentally place a shared
-   SQLite index on a network-mounted project root.
-
-The CLI may write a commented local configuration starter while preserving any
-existing `.accrete/local.toml`; the examples shipped here remain examples. A
-named Data destination becomes usable once its physical binding is configured.
-The project does not need to choose a GPU, scientific environment or Model before
-it can retain Memory or Results.
-
-`--git` may initialize Git if no repository exists. Initialization neither commits
-owner content nor selects a remote. No Model is automatically registered from
-the outer repository. No default Results, Memory entries or dummy Data are created.
-
-## Ownership and upgrades
-
-Read [the bundle format](TEMPLATE-FORMAT.md) for the exact manifest and inventory
-semantics. The installer applies three ownership policies:
-
-| Policy | Use | Update |
+| Package | Repository | Contains |
 | --- | --- | --- |
-| `managed-file` | Manuals, examples, foundational Skill files and generated release metadata | Replace only when unchanged from its installed base; otherwise leave current content and write a candidate. |
-| `managed-block` | `AGENTS.md`, `CLAUDE.md`, `.gitignore`, `.gitattributes` | Treat the delimited section as the managed unit; preserve all bytes outside it. |
-| `seed-once` | `.accrete/PROJECT.md` | Create when absent at initial setup; future owner edits and deletion are retained. |
+| `accrete-kit` on npm | `accrete-template` (this one) | The generator and upgrader, the assembled scaffold, Skills and manuals, and the embedded release binaries |
+| GitHub Release archives | `accrete-cli` | The native Kernel for each platform, with its notices |
 
-Keep enough old base content to compare local edits after the old executable is
-gone. `.accrete/template-bases/<sha256>` contains the small installed source bases
-and is shared alongside the inventory. Store no machine paths or operation
-receipts there. Two identical host copies may share one base blob.
+The Kernel works inside an existing Workspace and knows nothing about this repository:
+it requires only the marker, as `accrete-cli/docs/workspace.md` states. It has no
+initialization and no template logic. Creating a Workspace, upgrading template-derived
+files and handling their conflicts all belong here.
 
-On a clean managed file, upgrade installs incoming bytes and advances that path's
-base. On a modified file, it preserves the file and writes an incoming candidate
-below `.accrete/template-upgrades/<distribution-version>/`. The receipt names the
-current path, old base, incoming candidate and next action. It must not update
-the installed base to the new release while that candidate is unresolved.
+The repositories meet at two points: the marker, and the Kernel release this package embeds,
+named by `accrete.cli` and `accrete.cliRepo` in its `package.json`.
 
-After an Agent or owner resolves a candidate in the current file,
-`project upgrade --accept PATH` associates that deliberate resolution with the
-incoming base. The resulting file can retain local modifications. The CLI checks
-that the acknowledged candidate belongs to the current upgrade and has not been
-silently replaced. It does not make acceptance a force-overwrite operation.
+## Commands
 
-Per-path inventory matters when some updates succeed and others remain pending.
-Expose the target release and pending paths without claiming that the entire
-project already uses the new snapshot. Repeating the operation continues the
-remaining asset changes. Do not rerun Model operations or touch scientific Data
-to finish a template update.
+```sh
+npx accrete-kit@latest create my-project
+npx accrete-kit@latest create my-project --timezone Asia/Shanghai --agents claude --no-git --no-install
+npx accrete-kit@latest create .
+npx accrete-kit@latest upgrade
+npx accrete-kit@latest upgrade --dry-run --agents codex --project PATH --no-install
+npx accrete-kit@latest upgrade --accept PATH
+npx accrete-kit@<version> install
+npx accrete-kit@<version> install --project PATH
+```
 
-Files withdrawn by a release can be removed when still equal to their installed
-base. Preserve edited withdrawn files and report them as detached from future
-management. Removing a managed block preserves the rest of its file. An explicit
-profile selection can add or retire host-specific assets with these same rules;
-omitting `--agents` keeps the existing selection during upgrade. Domain Tool
-exposures and owner Skills are outside the foundational inventory.
+`create`, `upgrade` and `install` are subcommands, and a missing or unknown one prints usage
+and exits nonzero. All take `--json`. `--no-install` skips installing the Kernel binary. `accrete-kit` does not forward commands to the Kernel. `--name` and `--id` set identity when creating; see
+[the format](TEMPLATE-FORMAT.md#creating-a-workspace).
+
+## What creation does
+
+1. Validate the arguments, then the target. Nothing is written for a bad value.
+2. Write `.accrete/project.toml` unless one exists, in which case its identity stays.
+3. Install the selected files by ownership, preserving existing content, then write
+   `.accrete/template-install.json`. The default agents are `codex,claude`; `--agents none`
+   installs the shared manuals only.
+4. Run `git init` unless `--no-git` is given or the target is already inside a repository.
+   No first commit and no remote.
+5. Install this host's Kernel at `.accrete/bin/accrete`, unless `--no-install` is given.
+
+Store directories appear on first use, created by the Kernel. No Model is registered from
+the outer repository, and no default Results, Memory entries or Data are created. Host
+configuration such as `.claude/settings.json` and `.codex/config.toml` stays with the
+owner.
+
+## The Kernel in a Workspace
+
+The Kernel is a plain native executable at `.accrete/bin/accrete`, mode 0755, published by a
+temp sibling and rename. `/.accrete/bin/` is in the `.gitignore` block, so a clone restores
+its own. Workspaces on different versions coexist. A Workspace gets no root `package.json` and
+no `node_modules/`, and an existing project's `package.json` is untouched.
+
+- **`create` and `upgrade`** copy this host's binary from the package. `upgrade` moves the
+  binary and the inventory's `kernel_version` to the version this package carries.
+- **A binary that already runs as that version stays,** whatever its bytes. One that fails to
+  run, or reports another version, is replaced.
+- **`install`** restores the binary in an existing Workspace. It must match the recorded
+  `kernel_version`; otherwise it changes nothing, exits 4, and prints the matching
+  `npx accrete-kit@<version> install`, where the version is the inventory's `template_version`.
+- **A host with no embedded binary** gets an error naming the supported platforms. `create`
+  and `upgrade` still finish the Workspace, report it in `failed` with the retry command, and
+  exit 7; `install` exits 5. A symbolic link at or above `.accrete/bin/accrete` is not followed.
+- **Before installing,** the binary's digest and version are checked against
+  `dist/kernel/kernel.json`.
+
+Agents run the Kernel as `.accrete/bin/accrete` from the Workspace root, and as
+`<workspace>/.accrete/bin/accrete --project <workspace>` from anywhere else. This is stated
+once, in the `AGENTS.md` managed block and `cli-contract.md`; manuals write `accrete` as
+shorthand. `.accrete/docs/remote-work.md` gives the clone and no-Node routes.
+
+## The embedded binaries
+
+`scripts/fetch-kernel.mjs` places the declared release in `dist/kernel/<os>-<cpu>/`, each
+platform with its binary, `LICENSE`, `THIRD-PARTY-NOTICES` and `licenses/`, and records digests
+in `dist/kernel/kernel.json`. It downloads
+`accrete-<version>-<target>.tar.gz` and `SHA256SUMS` from the `v<version>` GitHub Release of
+`accrete.cliRepo`, or reads them from `--from DIR`, and verifies each archive against the sums.
+All four platforms are required unless `--allow-partial` is given, which is for local
+development only. `--check` verifies what is in place, and `npm publish` runs it, so a package
+without all four cannot be published.
+
+## Receipts
+
+`--json` prints one document on stdout.
+
+| Field | Meaning |
+| --- | --- |
+| `ok` | Whether every path and the Kernel install succeeded. Pending candidates are still `ok`. |
+| `action` | `create`, `upgrade`, `accept` or `install`. |
+| `project_root`, `project_id` | The Workspace. |
+| `written`, `removed` | Every path this run changed, bookkeeping included. |
+| `pending` | Paths with an unresolved candidate. |
+| `detached`, `locally_deleted` | Paths preserved and reported. |
+| `failed` | Per-path failures, with `error`, and `retry` for the Kernel. |
+| `files` | The decision for each path; a candidate names `candidate` and `next`. |
+| `kernel` | `version`, `platform`, `path` and `action`: `installed`, `unchanged`, `would-install`, `skipped` or `failed`. |
+| `next_steps` | What the person runs next. |
+
+`create` adds `created`, `name`, `timezone`, `format`, `marker` and `git_initialized`, and
+`skipped` with `message` when the Workspace is on another template version. Errors are one
+JSON document on stderr, in the Kernel's shape, and use its exit codes: 2 invalid, 3 not
+found or configuration, 4 conflict, 5 missing dependency, 6 storage, 7 a run that finished
+with failures. Warnings go to stderr in both modes.
 
 ## Command and input agreement
 
-The interface catalog enumerates 24 invocation shapes. The two `data register`
-forms share one operation. The installed generated map is produced from that
-catalog, avoiding a second maintained command list in every root instruction file.
-Object Skills carry the semantic manuals and situation-specific examples.
+`contract/cli-v1.json` lists every command form an agent learns: the Kernel's, 34
+invocation shapes. Generator commands are not in it; they are in
+`template/.accrete/docs/cli-contract.md`. The installed `.accrete/docs/cli-commands.md` is
+generated from the catalog.
 
-The native CLI's actual command declarations should eventually generate the
-command map or consume the aligned catalog at release build time. Until the two
-repositories are integrated, the catalog expresses required support; it is not
-a claim that a native command has been executed here.
+`scripts/check-cli-contract.mjs --binary PATH` checks every catalog entry and long flag
+against that binary's `--help`. The binary comes from the other repository, so this is a
+maintainer and release check rather than part of `npm test`. The release workflow runs it
+against the embedded binary for its runner before publishing.
 
-`contract/input-drafts.schema.json` describes caller input drafts when a schema
-is useful to the integration. It does not specify the native persisted envelope
-or database tables. `contract/example-inputs.json` maps shipped examples to those
-definitions. It imposes no scientific adequacy or experiment-order conditions.
+`contract/input-drafts.schema.json` describes caller input drafts. It does not specify the
+persisted envelope or database tables. `contract/example-inputs.json` maps shipped examples
+to those definitions. `template/.accrete/docs/cli-contract.md` holds the semantics.
 
-Choices made here where the architecture leaves spelling open include:
-
-- `ACCRETE_PROJECT`, global `--project` and `--json`.
-- `config resolve --json` as the bounded path-resolution diagnostic.
-- Structured `--from` inputs for Model, iteration and Tool actions.
-- JSON Merge Patch semantics for `result amend` and `tool update`.
-- Repeatable Memory relationship flags and optional stable retry IDs.
-- Exact host selection/exposure flags and `project upgrade --accept PATH`.
-
-The architecture already requires byte-bound revision checks, explicit incomplete
-publication outcomes, successful primary writes despite a pending index, real
-host discovery directories, explicit migrations, and no Kernel-replacing Skill
-scripts. If a counterpart chooses another exact spelling, reconcile the catalog,
-manuals and example inputs in one integration change while preserving that
-behavior. No compatibility shim or alternate Kernel is implemented here.
-
-## Scope of completed implementation
-
-The supplied source and build outputs contain the full template content and a
-working deterministic packager. `dist/preview/` shows the default two-host guidance
-layout, including concrete Skill directories and manuals. It intentionally has
-no `.accrete/project.toml`, durable objects or local index and is not an initialized
-research project. It exists to inspect the packaged assets without implementing
-another initialization route.
-
-The supplied build report records artifact construction and content checks.
-Live Claude Code/Codex discovery and native `accrete init`, mutation and upgrade
-execution require the separately supplied binaries. No claim of such execution
-is made by this repository's build output.
+The architecture requires byte-bound revision checks, explicit incomplete publication
+outcomes, successful primary writes despite a pending index, real host discovery
+directories, explicit migrations, and no Kernel-replacing Skill scripts. Spellings change
+in the catalog, manuals, examples and CLI together, with no compatibility aliases.

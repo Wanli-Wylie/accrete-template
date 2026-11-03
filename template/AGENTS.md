@@ -9,10 +9,10 @@ relevant `accrete-models`, `accrete-tools`, `accrete-data`, `accrete-results`, o
 `accrete-memory` Skill when the work concerns that object.
 
 Develop, inspect, execute, and integrate with ordinary tools. Use `accrete` for
-managed object writes; its installed `--help` and
-`.accrete/docs/cli-contract.md` describe
-the command interface. Keep the owning project explicit when working in an
-external checkout. Read `.accrete/docs/coordinator.md` or
+managed object writes; its `--help` and `.accrete/docs/cli-contract.md` describe
+the command interface. Run the Kernel as `.accrete/bin/accrete` from the Workspace root,
+and as `<workspace>/.accrete/bin/accrete --project <workspace>` from anywhere else. Manuals
+write `accrete` as shorthand. Read `.accrete/docs/coordinator.md` or
 `.accrete/docs/subagents.md` when
 delegating. Prior work remains useful in the conditions and revisions it names.
 <!-- accrete:end -->

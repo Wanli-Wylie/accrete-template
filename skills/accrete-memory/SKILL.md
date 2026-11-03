@@ -27,9 +27,9 @@ the current task.
 ## Publish a useful complete entry
 
 Draft the complete Markdown text in Scratch or another ordinary working file.
-Use `accrete memory append --from DRAFT_PATH` and supply known relations through
-the supported interface, such as `--result RESULT_ID`. The Kernel allocates the
-stable entry ID and publishes the complete entry at the next local date-based
+Use `accrete memory append --from DRAFT_PATH` and supply known relations, such as
+`--result RESULT_ID`. The Kernel allocates the stable entry ID, unless you supply
+`--id` for retries, and publishes the complete entry at the next local date-based
 path. Keep the returned ID and path in the handover where useful.
 
 The default path is `memory/YYYY/MM/DD/NNN.md`; configuration can place Memory
@@ -38,9 +38,9 @@ frontmatter ID identifies the entry even if an import renumbers its filename.
 Do not preallocate permanent empty entries or maintain numbering with a
 separate script.
 
-Write a later linked entry when an interpretation changes. Explain what
-changed and which earlier understanding it supersedes, while retaining the
-earlier prose. Use Results for activity descriptions and observations, and
+Write a later entry with `--supersedes EARLIER_ID` when an interpretation changes.
+Explain what changed and which earlier understanding it supersedes, while retaining
+the earlier prose. Use Results for activity descriptions and observations, and
 Data for retained payloads. A Memory entry can synthesize several activities
 without repeating all their detailed metadata.
 
@@ -58,5 +58,4 @@ form, grading step, or universal exclusive writer.
 - [Handovers and remote work](references/handovers-and-remote-work.md):
   self-contained returns, imported entries, and durable project experience.
 
-The installed native command's `--help` defines its supported options. The
-manual describes the expected interface from the shared ACCRETE architecture.
+`accrete memory append --help` prints the flags.
