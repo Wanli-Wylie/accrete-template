@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.1 — 2026-11-03
+
+First release published from GitHub Actions with npm trusted publishing and provenance.
+The embedded Kernel is still 0.1.0, and there is no functional change.
+
 ## 0.1.0 — 2026-11-03
 
 First release of `accrete-kit`, based on the architecture edition dated 3 November 2026.

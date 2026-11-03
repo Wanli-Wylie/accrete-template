@@ -1,6 +1,6 @@
 {
   "name": "accrete-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Create and upgrade ACCRETE Workspaces",
   "license": "MIT",
   "repository": { "type": "git", "url": "git+https://github.com/Wanli-Wylie/accrete-template.git" },
