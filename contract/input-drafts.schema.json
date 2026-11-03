@@ -1,0 +1,242 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:accrete:template:input-drafts:v1",
+  "title": "ACCRETE template v1 caller input drafts",
+  "description": "Caller payload shapes for template-to-CLI integration. Select a definition through $defs; the root does not identify a command. This is not a persisted object envelope, identity allocator, runtime dependency, or scientific acceptance schema. Additional project extension fields are preserved. Paths, revisions, relationships, and merged documents receive mechanical validation in the native CLI.",
+  "$comment": "Example drafts intentionally contain visible adaptation markers. A schema-valid draft is not necessarily ready to submit and does not establish that a referenced repository, path, revision, or object exists.",
+  "$defs": {
+    "nonemptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "A supplied or returned stable UUID. Native CLI validation is authoritative; schema format handling depends on the consumer."
+    },
+    "nullableString": {
+      "type": ["string", "null"]
+    },
+    "repository": {
+      "type": "object",
+      "required": ["checkout"],
+      "properties": {
+        "checkout": { "$ref": "#/$defs/nonemptyString", "description": "Existing checkout used to establish a host-local binding; it is not the Model identity." },
+        "scope": { "type": "array", "items": { "$ref": "#/$defs/nonemptyString" }, "description": "Optional caller-defined program source scope." }
+      },
+      "additionalProperties": true
+    },
+    "modelRegister": {
+      "type": "object",
+      "required": ["name", "repository"],
+      "properties": {
+        "id": { "$ref": "#/$defs/uuid", "description": "Optional stable caller ID for an idempotent create." },
+        "name": { "$ref": "#/$defs/nonemptyString" },
+        "description": { "type": "string" },
+        "aliases": { "type": "array", "items": { "$ref": "#/$defs/nonemptyString" } },
+        "repository": { "$ref": "#/$defs/repository" }
+      },
+      "additionalProperties": true
+    },
+    "iterationOpen": {
+      "type": "object",
+      "required": ["name", "purpose", "base_commit", "checkout"],
+      "properties": {
+        "id": { "$ref": "#/$defs/uuid" },
+        "name": { "$ref": "#/$defs/nonemptyString" },
+        "purpose": { "$ref": "#/$defs/nonemptyString" },
+        "base_commit": { "$ref": "#/$defs/nonemptyString", "description": "Full native Git commit ID resolved by the caller. This shape schema does not resolve Git objects." },
+        "checkout": { "$ref": "#/$defs/nonemptyString" },
+        "branch": { "$ref": "#/$defs/nonemptyString" },
+        "create_worktree": { "type": "boolean", "default": false, "description": "False or omitted attaches existing Git resources; true requests creation of the named checkout." }
+      },
+      "additionalProperties": true
+    },
+    "iterationClose": {
+      "type": "object",
+      "required": ["outcome"],
+      "properties": {
+        "outcome": { "$ref": "#/$defs/nonemptyString", "description": "Authored outcome; no fixed scientific workflow or outcome enumeration." },
+        "summary": { "type": "string" },
+        "commits": { "type": "array", "items": { "$ref": "#/$defs/nonemptyString" }, "description": "Relevant full native Git commit IDs, when known." }
+      },
+      "additionalProperties": true
+    },
+    "toolSource": {
+      "type": "object",
+      "required": ["path", "mode"],
+      "properties": {
+        "path": { "$ref": "#/$defs/nonemptyString" },
+        "mode": { "enum": ["live", "retained"] },
+        "revision": { "$ref": "#/$defs/nullableString", "description": "Known source revision; retained mode requires matching usable material and an explicit revision." }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "mode": { "const": "retained" } }, "required": ["mode"] },
+          "then": { "required": ["revision"], "properties": { "revision": { "$ref": "#/$defs/nonemptyString" } } }
+        }
+      ],
+      "additionalProperties": true
+    },
+    "toolAdmit": {
+      "type": "object",
+      "required": ["name", "source"],
+      "properties": {
+        "id": { "$ref": "#/$defs/uuid" },
+        "name": { "$ref": "#/$defs/nonemptyString" },
+        "description": { "type": "string" },
+        "aliases": { "type": "array", "items": { "$ref": "#/$defs/nonemptyString" } },
+        "source": { "$ref": "#/$defs/toolSource" }
+      },
+      "additionalProperties": true
+    },
+    "toolSourcePatch": {
+      "type": ["object", "null"],
+      "properties": {
+        "path": { "$ref": "#/$defs/nullableString" },
+        "mode": { "enum": ["live", "retained", null] },
+        "revision": { "$ref": "#/$defs/nullableString" }
+      },
+      "additionalProperties": true,
+      "description": "Partial source merge patch; null deletes a key. The native CLI validates the resulting complete source selection."
+    },
+    "toolUpdate": {
+      "type": "object",
+      "propertyNames": { "not": { "enum": ["id", "kind", "format"] } },
+      "properties": {
+        "name": { "$ref": "#/$defs/nullableString" },
+        "description": { "$ref": "#/$defs/nullableString" },
+        "aliases": { "type": ["array", "null"], "items": { "$ref": "#/$defs/nonemptyString" } },
+        "source": { "$ref": "#/$defs/toolSourcePatch" }
+      },
+      "additionalProperties": true,
+      "description": "JSON Merge Patch of editable Tool fields. Null removes a key, arrays replace whole arrays, and unknown extension fields remain open. The CLI validates the merged document and expected revision."
+    },
+    "toolRetire": {
+      "type": "object",
+      "required": ["reason"],
+      "properties": {
+        "reason": { "$ref": "#/$defs/nonemptyString" }
+      },
+      "additionalProperties": true
+    },
+    "dataContent": {
+      "type": "object",
+      "required": ["kind", "state"],
+      "properties": {
+        "kind": { "enum": ["file", "directory", "collection", "external"] },
+        "state": { "enum": ["closed", "live"] },
+        "format": { "type": "string" },
+        "version": { "description": "Optional known content edition or provider-native version description; adapter representation is defined by the paired CLI." },
+        "digest": { "description": "Optional supplied digest with explicit algorithm and content scope; representation is defined by the paired CLI. Do not fabricate uncomputed values." }
+      },
+      "additionalProperties": true
+    },
+    "dataOrigin": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string" },
+        "result_id": { "$ref": "#/$defs/uuid" },
+        "uri": { "type": "string", "description": "Provider or origin locator. Credentials remain in native configuration." }
+      },
+      "additionalProperties": true
+    },
+    "borrowedLocation": {
+      "type": "object",
+      "required": ["name", "kind", "path"],
+      "properties": {
+        "name": { "$ref": "#/$defs/nonemptyString", "description": "Unique location name within this Data descriptor." },
+        "kind": { "enum": ["filesystem", "rclone"] },
+        "host": { "$ref": "#/$defs/nonemptyString" },
+        "path": { "$ref": "#/$defs/nonemptyString" },
+        "managed": { "const": false, "default": false, "description": "Caller registration is borrowed. Only the Kernel establishes managed ownership of replicas it creates." }
+      },
+      "additionalProperties": true
+    },
+    "dataRegister": {
+      "type": "object",
+      "required": ["name", "content"],
+      "properties": {
+        "id": { "$ref": "#/$defs/uuid" },
+        "name": { "$ref": "#/$defs/nonemptyString" },
+        "description": { "type": "string" },
+        "content": { "$ref": "#/$defs/dataContent" },
+        "origin": { "$ref": "#/$defs/dataOrigin" },
+        "locations": { "type": "array", "items": { "$ref": "#/$defs/borrowedLocation" } }
+      },
+      "additionalProperties": true,
+      "description": "Describe intended material without requiring byte copying, hashing, local availability, or a generating Result."
+    },
+    "modelAssociation": {
+      "type": "object",
+      "required": ["model_id"],
+      "properties": {
+        "model_id": { "$ref": "#/$defs/uuid" },
+        "role": { "type": "string" },
+        "commit": { "$ref": "#/$defs/nullableString", "description": "Execution-associated full Git commit when known; omit or null when unknown." },
+        "dirty": { "type": ["boolean", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "toolAssociation": {
+      "type": "object",
+      "required": ["tool_id"],
+      "properties": {
+        "tool_id": { "$ref": "#/$defs/uuid" },
+        "revision": { "$ref": "#/$defs/nullableString" }
+      },
+      "additionalProperties": true
+    },
+    "dataAssociation": {
+      "type": "object",
+      "required": ["data_id"],
+      "properties": {
+        "data_id": { "$ref": "#/$defs/uuid" },
+        "role": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "resultAssociation": {
+      "type": "object",
+      "required": ["result_id"],
+      "properties": {
+        "result_id": { "$ref": "#/$defs/uuid" },
+        "role": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "resultRecord": {
+      "type": "object",
+      "required": ["activity"],
+      "properties": {
+        "id": { "$ref": "#/$defs/uuid" },
+        "activity": { "$ref": "#/$defs/nonemptyString" },
+        "models": { "type": "array", "items": { "$ref": "#/$defs/modelAssociation" } },
+        "tools": { "type": "array", "items": { "$ref": "#/$defs/toolAssociation" } },
+        "inputs": { "type": "array", "items": { "$ref": "#/$defs/dataAssociation" } },
+        "outputs": { "type": "array", "items": { "$ref": "#/$defs/dataAssociation" } },
+        "execution": { "description": "Supplied domain JSON describing execution. Keep historical execution time and later observation time distinct." },
+        "observations": { "description": "Domain JSON for observations; no universal scientific metric schema." },
+        "related_results": { "type": "array", "items": { "$ref": "#/$defs/resultAssociation" } }
+      },
+      "additionalProperties": true,
+      "description": "A useful activity description may be recorded before, during, or after execution with incomplete metadata. No Model, Tool, Data, environment, or successful outcome is universally required."
+    },
+    "resultAmend": {
+      "type": "object",
+      "propertyNames": { "not": { "enum": ["id", "kind", "format"] } },
+      "properties": {
+        "activity": { "$ref": "#/$defs/nullableString" },
+        "models": { "type": ["array", "null"], "items": { "$ref": "#/$defs/modelAssociation" } },
+        "tools": { "type": ["array", "null"], "items": { "$ref": "#/$defs/toolAssociation" } },
+        "inputs": { "type": ["array", "null"], "items": { "$ref": "#/$defs/dataAssociation" } },
+        "outputs": { "type": ["array", "null"], "items": { "$ref": "#/$defs/dataAssociation" } },
+        "execution": { "description": "JSON Merge Patch value for execution; null removes the field." },
+        "observations": { "description": "JSON Merge Patch value for observations; null removes the field." },
+        "related_results": { "type": ["array", "null"], "items": { "$ref": "#/$defs/resultAssociation" } }
+      },
+      "additionalProperties": true,
+      "description": "JSON Merge Patch of editable Result fields. Preserve other array members when replacing an array. The CLI checks expected revision and the resulting document, and does not change scientific interpretation on the caller's behalf."
+    }
+  }
+}

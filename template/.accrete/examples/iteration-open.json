@@ -1,0 +1,7 @@
+{
+  "name": "numerical-investigation",
+  "purpose": "Describe the question or implementation change this effort develops.",
+  "base_commit": "REPLACE_WITH_FULL_BASE_COMMIT",
+  "checkout": "REPLACE_WITH_ITERATION_CHECKOUT",
+  "create_worktree": false
+}

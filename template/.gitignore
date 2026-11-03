@@ -1,0 +1,15 @@
+# accrete:begin
+# Host-specific bindings and disposable/incomplete local operations.
+/.accrete/local.toml
+/.accrete/state/
+/.accrete/cache/
+/.accrete/operations/
+
+# Default ongoing work areas. Retain selected material before removing them.
+/scratch/
+/.scratch/
+
+# Shared configuration, object descriptors, Results, Memory, foundational Skills,
+# and the generated-file inventory remain eligible for version control.
+# The Kernel adds exact ignore entries for local Tool exposures when required.
+# accrete:end

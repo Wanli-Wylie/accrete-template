@@ -1,0 +1,27 @@
+# Compute-host example; adapt this host's actual paths and project aliases.
+# local_state.base must be local even when project metadata is on NFS/Lustre.
+host = "gpu-a"
+
+[local_state]
+base = "/local/project-name/accrete-state"
+
+[paths]
+scratch = "/scratch/project-name/run"
+
+[models.target]
+checkout = "/home/project-name/checkouts/target"
+
+[models.reference]
+checkout = "/home/project-name/checkouts/reference"
+
+[locations.working]
+root = "/scratch/project-name/data"
+
+[locations.archive]
+remote = "project-archive"
+prefix = "project-name"
+
+# An interpreter binding describes a project-managed environment; it does not
+# cause ACCRETE to create or activate it.
+# [environments.jax-gpu]
+# python = "/home/project-name/envs/jax-current/bin/python"

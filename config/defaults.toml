@@ -1,0 +1,19 @@
+# Native init merges these defaults, chooses a timezone, and inserts project_id.
+# This file is a release input; it is not an initialized project marker.
+format = 1
+timezone = "UTC"
+
+[paths]
+metadata = ".accrete/objects"
+results = "results"
+memory = "memory"
+tool_sources = "tools"
+scratch = "scratch"
+
+[locations.working]
+kind = "filesystem"
+purpose = "selected locally materialized scientific products"
+
+# The Kernel supplies an explicit, host-local root for locations.working.
+# Model checkouts, host names, interpreters, state directories and transfer
+# credentials are deliberately absent from shared defaults.

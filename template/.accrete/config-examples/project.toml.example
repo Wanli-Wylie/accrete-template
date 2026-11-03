@@ -1,0 +1,26 @@
+# Shared project configuration example. This is not an initialized project.
+# Native `accrete init` allocates project_id; preserve it in every clone.
+# See ../docs/configuration.md and the installed binary's supported schema.
+format = 1
+project_id = "GENERATED_BY_ACCRETE_INIT"
+timezone = "UTC"
+
+[paths]
+metadata = ".accrete/objects"
+results = "results"
+memory = "memory"
+tool_sources = "tools"
+scratch = "scratch"
+
+[locations.working]
+kind = "filesystem"
+purpose = "Current scientific products retained in place"
+
+[locations.archive]
+kind = "rclone"
+purpose = "Selected retained products"
+
+# Add environment guidance only for an existing project capability.
+# [environments.jax-gpu]
+# description = "Project-maintained execution environment"
+# instructions = "tools/model-execution/references/environment.md"

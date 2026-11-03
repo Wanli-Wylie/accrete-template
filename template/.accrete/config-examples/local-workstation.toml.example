@@ -1,0 +1,21 @@
+# Host-local example; adapt paths and aliases, then save as .accrete/local.toml.
+# All paths shown here are illustrative and must name this machine's locations.
+host = "workstation"
+
+[local_state]
+base = "/absolute/host-local/accrete-state"
+
+[paths]
+scratch = "scratch"
+
+# Bind only aliases for Models already registered in this project.
+# [models.target]
+# checkout = "/absolute/checkouts/target"
+
+[locations.working]
+root = "/absolute/retained-products"
+
+# Native tool credentials remain in their native configuration.
+# [locations.archive]
+# remote = "project-archive"
+# prefix = "project-name"

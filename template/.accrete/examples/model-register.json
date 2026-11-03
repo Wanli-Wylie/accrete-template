@@ -1,0 +1,7 @@
+{
+  "name": "simulation-model",
+  "description": "Describe the computational program developed or used by this project.",
+  "repository": {
+    "checkout": "REPLACE_WITH_EXISTING_CHECKOUT"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "selected-output",
+  "description": "Describe the selected completed product and its intended use.",
+  "content": {
+    "kind": "directory",
+    "state": "closed"
+  },
+  "origin": {
+    "description": "Describe the producer, extraction, or provider of this material."
+  },
+  "locations": [
+    {
+      "name": "producer-output",
+      "kind": "filesystem",
+      "path": "REPLACE_WITH_EXISTING_OUTPUT_PATH",
+      "managed": false
+    }
+  ]
+}

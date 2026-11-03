@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ACCRETE embedded template bundle v1",
+  "type": "object",
+  "required": ["schema_version", "template_id", "template_version", "distribution_version", "cli_version_range", "compatibility_status", "cli_contract", "project_formats", "default_profiles", "profiles", "initialization", "upgrade", "files"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "template_id": { "const": "accrete-foundation" },
+    "template_version": { "type": "string" },
+    "distribution_version": { "type": ["string", "null"] },
+    "cli_version_range": { "type": ["string", "null"] },
+    "compatibility_status": { "enum": ["unbound-template", "declared-by-integrating-release"] },
+    "cli_contract": { "const": "accrete-template-cli/v1" },
+    "architecture_edition": { "type": "string" },
+    "project_formats": { "type": "object", "required": ["min", "max"], "properties": { "min": { "type": "integer", "minimum": 1 }, "max": { "type": "integer", "minimum": 1 } }, "additionalProperties": false },
+    "default_profiles": { "type": "array", "uniqueItems": true, "items": { "enum": ["codex", "claude"] } },
+    "profiles": { "type": "object", "additionalProperties": { "type": "object", "required": ["skills_destination"], "properties": { "skills_destination": { "type": "string" } }, "additionalProperties": false } },
+    "initialization": { "type": "object" },
+    "upgrade": { "type": "object" },
+    "files": { "type": "array", "items": { "$ref": "#/$defs/file" } }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "file": {
+      "type": "object",
+      "required": ["source", "destination", "profile", "ownership", "sha256", "size", "mode"],
+      "properties": {
+        "source": { "type": "string", "minLength": 1 },
+        "destination": { "type": "string", "minLength": 1 },
+        "profile": { "enum": [null, "codex", "claude"] },
+        "ownership": { "enum": ["managed-file", "managed-block", "seed-once"] },
+        "sha256": { "$ref": "#/$defs/digest" },
+        "size": { "type": "integer", "minimum": 0 },
+        "mode": { "const": "0644" },
+        "block": { "type": "object", "required": ["start", "end", "sha256"], "properties": { "start": { "type": "string" }, "end": { "type": "string" }, "sha256": { "$ref": "#/$defs/digest" } }, "additionalProperties": false }
+      },
+      "allOf": [{ "if": { "properties": { "ownership": { "const": "managed-block" } } }, "then": { "required": ["block"] }, "else": { "not": { "required": ["block"] } } }],
+      "additionalProperties": false
+    }
+  }
+}

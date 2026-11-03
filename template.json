@@ -1,0 +1,44 @@
+{
+  "$schema": "./schemas/template-definition.schema.json",
+  "schema_version": 1,
+  "template_id": "accrete-foundation",
+  "project_formats": { "min": 1, "max": 1 },
+  "cli_contract": "accrete-template-cli/v1",
+  "default_profiles": ["codex", "claude"],
+  "profiles": {
+    "codex": { "skills_destination": ".agents/skills" },
+    "claude": { "skills_destination": ".claude/skills" }
+  },
+  "skills": [
+    "accrete-models", "accrete-tools", "accrete-data",
+    "accrete-results", "accrete-memory"
+  ],
+  "initialization": {
+    "project_marker": ".accrete/project.toml",
+    "defaults_source": "config/defaults.toml",
+    "kernel_allocates": ["project_id", "host_local_state", "template_inventory"],
+    "timezone": "explicit init option, otherwise defaults",
+    "directory_creation": "lazy using resolved configured paths",
+    "git": "only if requested; no initial commit or remote"
+  },
+  "ownership": {
+    "default": "managed-file",
+    "seed_once": [".accrete/PROJECT.md"],
+    "managed_blocks": [
+      { "path": "AGENTS.md", "start": "<!-- accrete:begin -->", "end": "<!-- accrete:end -->" },
+      { "path": "CLAUDE.md", "start": "<!-- accrete:begin -->", "end": "<!-- accrete:end -->" },
+      { "path": ".gitignore", "start": "# accrete:begin", "end": "# accrete:end" },
+      { "path": ".gitattributes", "start": "# accrete:begin", "end": "# accrete:end" }
+    ],
+    "profile_files": { "CLAUDE.md": "claude" }
+  },
+  "upgrade": {
+    "inventory": ".accrete/template-install.json",
+    "base_directory": ".accrete/template-bases",
+    "candidate_directory": ".accrete/template-upgrades",
+    "unchanged": "replace with embedded release asset",
+    "modified": "preserve current content and emit candidate",
+    "removed": "remove only unchanged managed content; preserve edited content",
+    "owner_content": "preserve outside managed blocks and all seed-once files"
+  }
+}

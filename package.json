@@ -1,0 +1,17 @@
+{
+  "name": "accrete-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Foundational project assets embedded by the ACCRETE native CLI",
+  "license": "UNLICENSED",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "check": "node scripts/build.mjs --check"
+  },
+  "files": [
+    "config/", "contract/", "docs/", "schemas/", "scripts/", "skills/",
+    "template/", "template.json", "README.md", "CHANGELOG.md"
+  ]
+}

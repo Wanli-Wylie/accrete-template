@@ -1,0 +1,51 @@
+{
+  "architecture_edition": "2026-11-03",
+  "supplied_archive": "ACCRETE-Architecture-Design.zip",
+  "archive_sha256": "6bc255419142da71065e41fbdc4bd362d411493dd808286b9a02deea3077ec01",
+  "documents": [
+    {
+      "path": "01-architecture-and-boundaries.md",
+      "sha256": "d3be0c1dab5b78ad1b198f421e8e51022b74d166b894fa889231884f4e6b1f2e"
+    },
+    {
+      "path": "02-evidence-and-practice.md",
+      "sha256": "b8142165c203804b0d9331802a4f6ba266de5b95b7d1417202a01243d22c6704"
+    },
+    {
+      "path": "03-objects-and-evolution.md",
+      "sha256": "8ef3c3957ee9ae785747fd86d1a2bc172c41ff2cec72116bb2c5888ec7fb866c"
+    },
+    {
+      "path": "04-kernel-and-cli.md",
+      "sha256": "b5d895d999a2cafc38607e2a65a9495830276d1b83c1e18acdab40b0e6d3774e"
+    },
+    {
+      "path": "05-persistence-and-concurrency.md",
+      "sha256": "20f6ebd1242e2f27b38d66c2835ae0aaf6650fee2575dda89b8bef93826459dc"
+    },
+    {
+      "path": "06-configuration-data-and-remote-work.md",
+      "sha256": "a267cc8fd142f692cd7134a983902163f5a357c1215a149f98874d95f91d8303"
+    },
+    {
+      "path": "07-distribution-and-upgrades.md",
+      "sha256": "86a6774c4f9e20a6e5255c0c8064778843dcb27e8d3012af559c911cc178dc0b"
+    },
+    {
+      "path": "08-agents-skills-and-capabilities.md",
+      "sha256": "df0db10b5ec0ddfe00204e901a7e121a424f190c578ef83e22dd1038a8534546"
+    },
+    {
+      "path": "09-realization-and-migration.md",
+      "sha256": "e25d816cd7f80ebe14670e4063b2a401339d43eaa1222d3eddb5db70faddbd8c"
+    },
+    {
+      "path": "10-technical-landscape-and-decisions.md",
+      "sha256": "e87ad721c993b897975f36ad2df8499af8fe9e2b101bfeb7f34de9dd82b63fa4"
+    },
+    {
+      "path": "README.md",
+      "sha256": "46ad33830cb82a1bfcd6ca0209fd2d40f2aacb7717f423f9e7ea4b128c38e329"
+    }
+  ]
+}

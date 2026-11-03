@@ -1,0 +1,17 @@
+# accrete:begin
+AGENTS.md text eol=lf
+CLAUDE.md text eol=lf
+.accrete/*.md text eol=lf
+.accrete/*.toml text eol=lf
+.accrete/docs/** text eol=lf
+.accrete/config-examples/** text eol=lf
+.accrete/contracts/** text eol=lf
+.accrete/examples/** text eol=lf
+.accrete/release.json text eol=lf
+.accrete/template-install.json text eol=lf
+# Base and candidate digests cover their exact bytes on every checkout.
+.accrete/template-bases/** -text
+.accrete/template-upgrades/** -text
+.agents/skills/accrete-*/** text eol=lf
+.claude/skills/accrete-*/** text eol=lf
+# accrete:end

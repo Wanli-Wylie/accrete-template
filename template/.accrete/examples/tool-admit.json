@@ -1,0 +1,8 @@
+{
+  "name": "diagnostic-method",
+  "description": "Describe the useful capability and the context in which to use it.",
+  "source": {
+    "path": "REPLACE_WITH_EXISTING_TOOL_SOURCE",
+    "mode": "live"
+  }
+}
