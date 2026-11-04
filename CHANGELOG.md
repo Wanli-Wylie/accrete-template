@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 — 2026-11-04
+
+- `npx accrete-kit@latest ui` runs the local web page for a Workspace, macOS only for now, with
+  `--project`, `--no-open`, `--no-tmux` and `--port`. `accrete-ui` stays its own repository and
+  ships inside this package, in `dist/ui/`, placed by `scripts/fetch-ui.mjs` from the GitHub
+  Release that `accrete.ui` and `accrete.uiRepo` name. The package still has no npm dependencies,
+  and a Workspace gains nothing from this.
+- A release now needs the `accrete-ui` release to exist first, as it does the Kernel's.
+
 ## 0.1.1 — 2026-11-03
 
 First release published from GitHub Actions with npm trusted publishing and provenance.

@@ -11,6 +11,7 @@ maintains and publishes its own releases.
 | --- | --- | --- |
 | `accrete-kit` on npm | `accrete-template` (this one) | The generator and upgrader, the assembled scaffold, Skills and manuals, and the embedded release binaries |
 | GitHub Release archives | `accrete-cli` | The native Kernel for each platform, with its notices |
+| GitHub Release archive | `accrete-ui` | The local web page and its server, with what they need to run, embedded by this package |
 
 The Kernel works inside an existing Workspace and knows nothing about this repository:
 it requires only the marker, as `accrete-cli/docs/workspace.md` states. It has no
@@ -31,10 +32,11 @@ npx accrete-kit@latest upgrade --dry-run --agents codex --project PATH --no-inst
 npx accrete-kit@latest upgrade --accept PATH
 npx accrete-kit@<version> install
 npx accrete-kit@<version> install --project PATH
+npx accrete-kit@latest ui [--project PATH] [--no-open] [--no-tmux] [--port N]
 ```
 
-`create`, `upgrade` and `install` are subcommands, and a missing or unknown one prints usage
-and exits nonzero. All take `--json`. `--no-install` skips installing the Kernel binary. `accrete-kit` does not forward commands to the Kernel. `--name` and `--id` set identity when creating; see
+`create`, `upgrade`, `install` and `ui` are subcommands, and a missing or unknown one prints usage
+and exits nonzero. All but `ui` take `--json`. `--no-install` skips installing the Kernel binary. `accrete-kit` does not forward commands to the Kernel. `--name` and `--id` set identity when creating; see
 [the format](TEMPLATE-FORMAT.md#creating-a-workspace).
 
 ## What creation does
@@ -89,9 +91,26 @@ All four platforms are required unless `--allow-partial` is given, which is for 
 development only. `--check` verifies what is in place, and `npm publish` runs it, so a package
 without all four cannot be published.
 
+## The UI
+
+`ui` selects the Workspace as `upgrade` does, then runs `dist/ui/bin/accrete-ui.mjs` on it with
+this Node and inherited stdio. It stays in the foreground, prints the server's URL, opens it
+unless `--no-open` is given, and returns the server's exit code. It writes nothing to the
+Workspace, and a Workspace gains no files from it. `accrete-ui` documents the terminal, the
+panels and the security of the page. Anywhere but macOS, or in a checkout with no `dist/ui/`, it
+exits 5 with a message saying so.
+
+`scripts/fetch-ui.mjs` places the declared release in `dist/ui/` with `ui.json`, which records
+its version. It downloads `accrete-ui-<version>.tar.gz` and `SHA256SUMS` from the `v<version>`
+GitHub Release of `accrete.uiRepo`, or reads them from `--from DIR`, and verifies the archive
+against the sums. There is one archive, holding the prebuilds for both Mac architectures. It
+copies real files only, staged beside `dist/ui/`, and makes each `spawn-helper` executable.
+`--check` verifies what is in place, and `npm publish` runs it. `dist/ui/` is not an npm
+dependency: `vendor/` inside it holds what the server loads, so this package still has none.
+
 ## Receipts
 
-`--json` prints one document on stdout.
+`--json` prints one document on stdout. `ui` prints none.
 
 | Field | Meaning |
 | --- | --- |

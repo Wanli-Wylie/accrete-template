@@ -3,7 +3,8 @@
 Creates and upgrades ACCRETE Workspaces. This repository,
 `accrete-template`, publishes the npm package `accrete-kit`: the generator, five complete
 object Skills with their reference manuals, Coordinator and Subagent guidance,
-configuration examples, the command catalog, and the Kernel's release binaries.
+configuration examples, the command catalog, the Kernel's release binaries, and a local web
+page for watching a Workspace.
 
 A Workspace is an independent Git project owned by the user, not a fork kept in sync with
 this template. `accrete-kit` creates and maintains it, general-purpose coding agents work in it, and
@@ -18,7 +19,11 @@ npx accrete-kit@latest create .
 npx accrete-kit@latest upgrade
 npx accrete-kit@latest upgrade --dry-run
 npx accrete-kit@<version> install
+npx accrete-kit@latest ui
 ```
+
+`ui` serves a page with a real terminal and read-only panels for the Workspace, and stays in
+the foreground until you stop it. It is macOS only for now.
 
 ## What the Agent receives
 
@@ -125,6 +130,7 @@ replacing a Kernel or refreshing guidance does not silently migrate scientific w
 | `schemas/` | JSON Schemas for the source definition and scaffold manifest |
 | `scripts/build.mjs` | Assembles `dist/scaffold/` and checks the sources |
 | `scripts/fetch-kernel.mjs` | Places the declared Kernel release in `dist/kernel/`, verified against `SHA256SUMS` |
+| `scripts/fetch-ui.mjs` | Places the declared `accrete-ui` release in `dist/ui/`, verified against `SHA256SUMS` |
 | `scripts/check-cli-contract.mjs` | Checks the catalog against a Kernel binary's `--help` |
 | `.github/workflows/` | CI, and a tag-triggered release with trusted publishing |
 | `docs/` | The generator, scaffold format, architecture rationale, and maintenance |
@@ -146,4 +152,5 @@ Read [the generator](docs/CLI-INTEGRATION.md) for commands, the Kernel and recei
 [Build notes](docs/BUILD-REPORT.md) say what the build and tests cover.
 
 MIT licensed; see `LICENSE`. Each embedded Kernel keeps its own `LICENSE`,
-`THIRD-PARTY-NOTICES` and `licenses/` beside it in `dist/kernel/`.
+`THIRD-PARTY-NOTICES` and `licenses/` beside it in `dist/kernel/`, and the UI keeps its own in
+`dist/ui/`.

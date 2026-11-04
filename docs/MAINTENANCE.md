@@ -15,6 +15,7 @@ The template's design basis is documented in [DESIGN-NOTES.md](DESIGN-NOTES.md).
 | Profiles and file ownership | `template.json` |
 | Creation, upgrade and conflict behavior | `lib/`, `test/` and [the format](TEMPLATE-FORMAT.md), together |
 | The embedded Kernel and where it is released | `accrete.cli` and `accrete.cliRepo` in `package.json`, the one place the repository is named |
+| The bundled UI and where it is released | `accrete.ui` and `accrete.uiRepo` in `package.json`; the UI itself is `accrete-ui` |
 | Command spelling, inputs, or receipts | `contract/cli-v1.json`, the authored CLI semantics manual, the Skill references, and `accrete-cli`, in one change |
 | Scaffold representation | `schemas/`, `scripts/build.mjs` and `lib/scaffold.mjs`, with corresponding format documentation |
 
@@ -66,12 +67,14 @@ Update `package.json` and `CHANGELOG.md`, then tag `vX.Y.Z`. Keep the meanings s
 |---|---|
 | Package version | These assets and this generator, also called the template version |
 | `accrete.cli` | The exact Kernel release this version embeds and was written for |
+| `accrete.ui` | The exact `accrete-ui` release this version embeds |
 | Project format range | Workspace formats for which the guidance is written |
 
 The tag runs `.github/workflows/release.yml`: it runs the checks, fetches the declared Kernel
-for all four platforms from the `accrete-cli` GitHub Release, runs the tests, runs
-`scripts/check-cli-contract.mjs` against the embedded binary for its runner, and publishes with
-npm trusted publishing. So the `accrete-cli` release comes first; a missing or drifted Kernel
+for all four platforms from the `accrete-cli` GitHub Release and the declared UI from the
+`accrete-ui` GitHub Release, runs the tests, runs `scripts/check-cli-contract.mjs` against the
+embedded binary for its runner, and publishes with npm trusted publishing. So the order is the
+`accrete-cli` and `accrete-ui` releases first, then this one; a missing or drifted Kernel or UI
 stops the release before anything is published. Register the workflow as this package's
 trusted publisher on npm once.
 
@@ -79,12 +82,14 @@ For local work, fetch what you have, then pack:
 
 ```sh
 node scripts/fetch-kernel.mjs --from DIR --allow-partial
+node scripts/fetch-ui.mjs --from ../accrete-ui/dist
 npm pack
 node scripts/check-cli-contract.mjs --binary dist/kernel/darwin-arm64/accrete
 ```
 
 `--allow-partial` is for local development only. `npm publish` runs `fetch-kernel.mjs --check`
-and fails unless all four platforms are in place at the declared version.
+and `fetch-ui.mjs --check`, and fails unless all four platforms and the UI are in place at the
+declared versions. `npm run build` in `accrete-ui` produces `../accrete-ui/dist`.
 
 ## Maintain upgrade behavior
 
@@ -114,4 +119,4 @@ generator runs a Kernel is `--version`, to decide whether one already there stil
 
 Do not install personal or user-global Skills as part of maintenance. These are
 project assets installed by the generator for the selected agents. The package is MIT
-licensed, and each embedded Kernel keeps its own notices beside it.
+licensed, and each embedded Kernel and the UI keep their own notices beside them.

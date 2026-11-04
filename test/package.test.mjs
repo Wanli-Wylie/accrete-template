@@ -5,7 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { tempDir } from './support.mjs';
+import { snapshot, tempDir } from './support.mjs';
 
 const REPO = fileURLToPath(new URL('..', import.meta.url));
 
@@ -43,6 +43,17 @@ test('the packed bin creates a complete Workspace', t => {
     assert.equal(restored.status, 0, restored.stderr);
     const version = JSON.parse(fs.readFileSync(path.join(packedKernel, 'kernel.json'), 'utf8')).version;
     assert.equal(spawnSync(path.join(root, '.accrete/bin/accrete'), ['--version'], { encoding: 'utf8' }).stdout.trim(), `accrete ${version}`);
+  }
+
+  // The same for the UI: every fetched file, and a spawn-helper that is still executable.
+  // Without a fetched UI there is nothing to ship, and test/ui.test.mjs packs a stand-in.
+  const fetchedUi = path.join(REPO, 'dist/ui');
+  if (fs.existsSync(fetchedUi)) {
+    for (const file of Object.keys(snapshot(fetchedUi))) assert.ok(names.includes(`dist/ui/${file}`), file);
+    for (const platform of ['darwin-arm64', 'darwin-x64']) {
+      const helper = path.join(directory, 'package/dist/ui/vendor/node-pty/prebuilds', platform, 'spawn-helper');
+      assert.equal(fs.statSync(helper).mode & 0o777, 0o755, platform);
+    }
   }
 
   // The documented spelling, with the package resolved from a local install: npx hands

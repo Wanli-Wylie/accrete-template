@@ -1,6 +1,6 @@
 name: Release
-# A version tag publishes accrete-kit. The Kernel it declares must already be a GitHub
-# Release of accrete-cli, so that release comes first; a missing one stops here.
+# A version tag publishes accrete-kit. The Kernel and the UI it declares must already be
+# GitHub Releases of accrete-cli and accrete-ui, so those come first; a missing one stops here.
 on:
   push:
     tags: ['v*']
@@ -23,6 +23,8 @@ jobs:
       - run: npm run check
       - name: Fetch the declared Kernel for all four platforms
         run: node scripts/fetch-kernel.mjs
+      - name: Fetch the declared UI
+        run: node scripts/fetch-ui.mjs
       - run: npm test
       - name: Check the catalog against the embedded Kernel for this runner
         run: node scripts/check-cli-contract.mjs --binary dist/kernel/linux-x64/accrete

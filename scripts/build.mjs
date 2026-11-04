@@ -247,7 +247,7 @@ async function main() {
     const stat = await fs.lstat(dist);
     assert(stat.isDirectory() && !stat.isSymbolicLink(), 'dist must be an ordinary build-output directory');
   } catch (error) { if (error.code !== 'ENOENT') throw error; }
-  // dist/kernel/ is fetch-kernel's and survives a build.
+  // dist/kernel/ and dist/ui/ are the fetch scripts' and survive a build.
   const scaffold = path.join(dist, 'scaffold');
   await fs.rm(scaffold, { recursive: true, force: true });
   await writeTree(scaffold, assets);
